@@ -3,12 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Peter Zsoldos | AI & Robotics Researcher</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --text: #334155;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background-color: var(--light);
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background: var(--dark);
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            padding: 2rem;
+        }
+        .profile-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 4px solid var(--primary);
+            object-fit: cover;
+        }
+        h1 { margin: 1rem 0 0.5rem; }
+        .contact-info { margin-bottom: 2rem; }
+        .contact-info a { color: #60a5fa; text-decoration: none; margin: 0 10px; }
+        section {
+            background: white;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 0.5rem;
+        }
+        .job, .edu { margin-bottom: 1.5rem; }
+        .date { font-weight: bold; color: var(--primary); }
+        ul { padding-left: 1.2rem; }
+        .tag {
+            display: inline-block;
+            background: #e2e8f0;
+            padding: 0.2rem 0.8rem;
+            border-radius: 15px;
+            margin: 0.2rem;
+            font-size: 0.9rem;
+        }
+    </style>
 </head>
 <body>
-    <h1>Peter Zsoldos</h1>
-    <p>Welcome to my personal website! Here you can find information about my projects,
-    my resume, and contact information. Feel free to explore and reach out if you have any questions or opportunities!</p>
-    
+
+<header>
+    <img src="your-image.jpg" alt="Peter Zsoldos" class="profile-img">
+    <h1>Peter Zsoldos </h1>
+    <p>AI Researcher | Robotics Engineer | Master's Student</p>
+    <div class="contact-info">
+        📍 Sundsvall, Sweden  | 
+        🔗 <a href="https://www.linkedin.com/in/peter--zsoldos/">LinkedIn</a> 
+    </div>
+</header>
+
+<div class="container">
+    <section id="about">
+        <h2>Career Objective</h2>
+        <p>My goal is to leverage my experience in AI, robotics, and computer graphics research to address and solve complex industrial challenges.</p>
+    </section>
+
+    <section id="experience">
+        <h2>Work Experience</h2>
+        <div class="job">
+            <h3>SZTAKI Artificial Intelligence National Laboratory </h3>
+            <p class="date">July 2024 – Present </p>
+            <ul>
+                <li>Researched radical AI-driven scientific methodologies with OpenAI involvement as part of the AI Squad.</li>
+                <li>Implemented an intelligent multimodal LLM system on the Boston Dynamics Spot robot for voice control.</li>
+                <li>Trained reinforcement learning models in IsaacLab for Spot robot task execution.</li>
+                <li>Developed a RAG-based chat interface allowing researchers to interact with databases via SQL-writing LLMs.</li>
+            </ul>
+        </div>
+        <div class="job">
+            <h3>Enliven Systems Kft. </h3>
+            <p class="date">January 2024 – June 2024 </p>
+            <ul>
+                <li>Researched machine learning applications for contract drafting.</li>
+                <li>Authored, tested, and executed system specifications.</li>
+            </ul>
+        </div>
+        <div class="job">
+            <h3>Startup Co-Founder </h3>
+            <p>Co-founded a Hungarian startup building exoskeletons for people with neurodegenerative diseases.</p>
+        </div>
+    </section>
+
+    <section id="education">
+        <h2>Education</h2>
+        <div class="edu">
+            <h3>Erasmus Mundus Joint Master Degree </h3>
+            <p>Mid Sweden University & Tampere University | 2025 – 2027 (Expected) </p>
+        </div>
+        <div class="edu">
+            <h3>Computer Science BSc </h3>
+            <p>Eötvös Loránd University | 2022 – 2025 </p>
+        </div>
+    </section>
+
+    <section id="skills">
+        <h2>Technical Skills</h2>
+        <div>
+            <strong>Languages:</strong> 
+            <span class="tag">Python</span> <span class="tag">C++</span> <span class="tag">Java</span> <span class="tag">JavaScript</span> <span class="tag">C#</span> 
+        </div>
+        <div style="margin-top:1rem;">
+            <strong>AI & ML:</strong> 
+            <span class="tag">Neural Networks</span> <span class="tag">Computer Vision</span> <span class="tag">NLP</span> <span class="tag">LLMs</span> 
+        </div>
+        <div style="margin-top:1rem;">
+            <strong>Tools:</strong> 
+            <span class="tag">Docker</span> <span class="tag">Git</span> <span class="tag">CI/CD</span> <span class="tag">PyTorch</span> <span class="tag">TensorFlow</span> 
+        </div>
+    </section>
+
+    <section id="publications">
+        <h2>Publications & Research</h2>
+        <ul>
+            <li><strong>Deep Learning-Based Implementation of Telerobotic Control with Gesture Recognition from EMG Signals</strong> - Published in IEEE.</li>
+            <li>Multi-camera multi-object tracking for ruffs with Max Planck Institute.</li>
+            <li>Real-time robotics teleoperation via RNN classification of EMG signals.</li>
+        </ul>
+    </section>
+</div>
+
+<footer style="text-align: center; padding: 2rem; color: #64748b;">
+    <p>&copy; 2026 Peter Zsoldos. All rights reserved.</p>
+</footer>
+
 </body>
 </html>
