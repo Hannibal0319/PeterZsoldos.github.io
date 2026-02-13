@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Parallel Beam Tomography with Detector-Aligned Projection</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 5px;
+    }
+    .layout {
+      display: flex;
+      gap: 18px;
+      align-items: flex-start;
+      margin-top: 8px;
+    }
+    canvas {
+      background: black;
+      border: 1px solid #334155;
+      border-radius: 12px;
+    }
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 280px;
+    }
+    .shape-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .shape-buttons button {
+      width: 100%;
+      background: #1e293b;
+      color: #e2e8f0;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 8px 10px;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .shape-buttons button:hover {
+      background: #0ea5e9;
+      border-color: #0ea5e9;
+      color: #0b1224;
+    }
+    .shape-buttons button.active {
+      background: #22c55e;
+      border-color: #22c55e;
+      color: #0b1224;
+    }
+    .info-card {
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 14px;
+      line-height: 1.4;
+      color: #cbd5e1;
+    }
+  </style>
+  <script src="index.js" defer></script>
+</head>
+<body>
+  <h3>Parallel Beam Tomography — Projection at Detector</h3>
+  <div class="layout">
+    <canvas id="canvas" width="600" height="600"></canvas>
+
+    <div class="controls">
+      <div>
+        <label>Angle: <span id="angleValue">0</span>°</label>
+        <input type="range" id="angleSlider" min="0" max="360" value="0" step="1" style="width:100%" />
+      </div>
+      <br>
+      <div class="shape-buttons">
+        <span>Phantom Shape:</span>
+        <button id="btnShapeE">Letter E</button>
+        <button id="btnShapeA">Letter A</button>
+        <button id="btnShape1">Number 1</button>
+        <button id="btnShapeO">Circle O</button>
+        <button id="btnShapeSquare">Square</button>
+        <button id="btnShapeTri">Triangle</button>
+        <button id="btnShapePlus">Plus</button>
+      </div>
+      <br>
+      <div class="info-card">
+        Rays sweep across the phantom at the chosen angle. Each line integrates how much of the shape it crosses, and the detector bar shows those projection values at the ray endpoints. Switch phantoms to see how the sinogram pattern changes.
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
