@@ -72,6 +72,15 @@
             max-width: 600px;
             margin: 0.5rem auto;
         }
+        .profile-img {
+            width: clamp(160px, 24vw, 320px);
+            height: auto;
+            aspect-ratio: 1 / 1;
+            border-radius: 99px;
+            object-fit: cover;
+            box-shadow: 0 12px 40px -10px rgba(56, 189, 248, 0.35);
+            margin-bottom: 1rem;
+        }
         .container {
             position: relative;
             z-index: 2;
@@ -192,7 +201,7 @@
 <div class="header">
     <canvas class="neural-canvas" id="neural-canvas"></canvas>
     <div class="header-content">
-        <img src="profile.jpg" alt="Peter Zsoldos" style="width: 320px; height: 320px; border-radius: 99px; margin-bottom: 1rem; object-fit: cover; box-shadow: 0 12px 40px -10px rgba(56, 189, 248, 0.35);">
+        <img src="profile.jpg" alt="Peter Zsoldos" class="profile-img">
         <h1>Peter Zsoldos</h1>
         <p>AI & Robotics Researcher | Erasmus Mundus Scholar</p>
         <p>Sundsvall, Sweden - <a href="https://www.linkedin.com/in/peter--zsoldos" style="color: #60a5fa;" target="_blank" rel="noopener noreferrer">LinkedIn</a></p>
