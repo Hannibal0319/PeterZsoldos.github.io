@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Fourier Slice Theorem (WebGL)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0b0f;
+      --panel: #11131a;
+      --accent: #9ef0ff;
+      --text: #e7ecf3;
+      --muted: #7c869c;
+      --grid: #1b1e27;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Space Grotesk", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at 10% 10%, rgba(158, 240, 255, 0.06), transparent 35%),
+                  radial-gradient(circle at 80% 20%, rgba(255, 115, 182, 0.05), transparent 35%),
+                  var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 16px;
+    }
+    header {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    h1 { margin: 0; font-size: 22px; letter-spacing: 0.6px; }
+    .subtitle { color: var(--muted); font-size: 14px; }
+    .controls {
+      background: var(--panel);
+      border: 1px solid #1e2330;
+      border-radius: 12px;
+      padding: 14px 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+      display: grid;
+      grid-template-columns: 70px 1fr 70px;
+      gap: 12px;
+      align-items: center;
+      width: 100%;
+    }
+    .controls label { font-size: 13px; color: var(--muted); }
+    .controls input[type=range] {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+    .grid {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 12px;
+      width: 100%;
+      margin: 0 auto;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid #1e2330;
+      border-radius: 12px;
+      padding: 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1 1 220px;
+      width: clamp(220px, 19vw, 260px);
+    }
+    .card h3 {
+      margin: 0;
+      font-size: 15px;
+      letter-spacing: 0.3px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .canvas-wrap {
+      background: linear-gradient(135deg, #0d1018, #0c111a);
+      border-radius: 10px;
+      border: 1px solid #1e2330;
+      position: relative;
+      min-height: 280px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+    canvas { max-width: 100%; height: auto; }
+    .overlay-line {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .plot {
+      width: 100%;
+      height: 220px;
+      background: #0d1018;
+      border: 1px solid #1e2330;
+      border-radius: 10px;
+    }
+    .explain {
+      max-width: 1100px;
+      width: 100%;
+      margin: 0 auto;
+      background: var(--panel);
+      border: 1px solid #1e2330;
+      border-radius: 12px;
+      padding: 14px 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+      color: white;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    @media (max-width: 700px) {
+      header { flex-direction: column; align-items: flex-start; }
+      .controls { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Fourier Slice Theorem — WebGL</h1>
+      <div class="subtitle">Shepp-Logan phantom · projection · Fourier slice · reconstruction</div>
+    </div>
+  </header>
+
+  <div class="grid">
+    <div class="card">
+      <h3>Original (with ray)</h3>
+      <div class="canvas-wrap">
+        <canvas id="canvas-original" width="260" height="260"></canvas>
+        <canvas class="overlay-line" id="overlay-original" width="260" height="260"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Projection</h3>
+      <canvas class="plot" id="canvas-projection" width="320" height="220"></canvas>
+    </div>
+    <div class="card">
+      <h3>1D Fourier |P(ω)|</h3>
+      <canvas class="plot" id="canvas-f1" width="320" height="220"></canvas>
+    </div>
+    <div class="card">
+      <h3>2D Fourier (log mag) + slice</h3>
+      <div class="canvas-wrap">
+        <canvas id="canvas-f2" width="260" height="260"></canvas>
+        <canvas class="overlay-line" id="overlay-slice" width="260" height="260"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Reconstruction (accum slices)</h3>
+      <div class="canvas-wrap">
+        <canvas id="canvas-recon" width="260" height="260"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="explain">
+    Parallel beams on the original phantom show the rays being summed into a projection (left plots). Each projection contributes one radial line in 2D Fourier space, and the accumulated slices invert back to a growing reconstruction. Drag the angle slider to sweep the beam bundle and watch the spectrum fill in.
+  </div>
+
+  <div class="controls" style="position: sticky; bottom: 0; align-self: center; max-width: 1100px;">
+    <label for="angle">Angle</label>
+    <input id="angle" type="range" min="0" max="180" value="0" step="1" />
+    <span id="angle-value">0°</span>
+  </div>
+
+  <script>
+    // WebGL Fourier slice theorem demo derived from the matplotlib script
+// Computes a Shepp-Logan phantom, its Fourier transform, projections, and shows
+// the slice theorem interactively using WebGL textures for images.
+
+const N = 128;
+const center = N / 2;
+const freq = new Float32Array(N);
+for (let i = 0; i < N; i++) freq[i] = i - N / 2;
+
+const angleSlider = document.getElementById("angle");
+const angleValue = document.getElementById("angle-value");
+
+// ----- Utility: FFT -----
+function fft1d(re, im, inverse = false) {
+  const n = re.length;
+  // bit reversal
+  for (let i = 1, j = 0; i < n; i++) {
+    let bit = n >> 1;
+    for (; j & bit; bit >>= 1) j ^= bit;
+    j ^= bit;
+    if (i < j) {
+      const tr = re[i];
+      const ti = im[i];
+      re[i] = re[j];
+      im[i] = im[j];
+      re[j] = tr;
+      im[j] = ti;
+    }
+  }
+  for (let len = 2; len <= n; len <<= 1) {
+    const ang = (inverse ? -1 : 1) * (2 * Math.PI / len);
+    const wlenCos = Math.cos(ang);
+    const wlenSin = Math.sin(ang);
+    for (let i = 0; i < n; i += len) {
+      let wCos = 1;
+      let wSin = 0;
+      for (let j = 0; j < len / 2; j++) {
+        const uRe = re[i + j];
+        const uIm = im[i + j];
+        const vRe = re[i + j + len / 2] * wCos - im[i + j + len / 2] * wSin;
+        const vIm = re[i + j + len / 2] * wSin + im[i + j + len / 2] * wCos;
+        re[i + j] = uRe + vRe;
+        im[i + j] = uIm + vIm;
+        re[i + j + len / 2] = uRe - vRe;
+        im[i + j + len / 2] = uIm - vIm;
+        const nextCos = wCos * wlenCos - wSin * wlenSin;
+        wSin = wCos * wlenSin + wSin * wlenCos;
+        wCos = nextCos;
+      }
+    }
+  }
+  if (inverse) {
+    for (let i = 0; i < n; i++) {
+      re[i] /= n;
+      im[i] /= n;
+    }
+  }
+}
+
+function fft2d(realInput, inverse = false, imagInput = null) {
+  const re = new Float32Array(realInput);
+  const im = imagInput ? new Float32Array(imagInput) : new Float32Array(re.length);
+  // rows
+  for (let r = 0; r < N; r++) {
+    const rowRe = re.subarray(r * N, (r + 1) * N);
+    const rowIm = im.subarray(r * N, (r + 1) * N);
+    fft1d(rowRe, rowIm, inverse);
+  }
+  // cols
+  const tmpRe = new Float32Array(N);
+  const tmpIm = new Float32Array(N);
+  for (let c = 0; c < N; c++) {
+    for (let r = 0; r < N; r++) {
+      tmpRe[r] = re[r * N + c];
+      tmpIm[r] = im[r * N + c];
+    }
+    fft1d(tmpRe, tmpIm, inverse);
+    for (let r = 0; r < N; r++) {
+      re[r * N + c] = tmpRe[r];
+      im[r * N + c] = tmpIm[r];
+    }
+  }
+  return { re, im };
+}
+
+function fftshift2d(re, im) {
+  const outRe = new Float32Array(re.length);
+  const outIm = new Float32Array(im.length);
+  const half = N / 2;
+  for (let y = 0; y < N; y++) {
+    for (let x = 0; x < N; x++) {
+      const nx = (x + half) % N;
+      const ny = (y + half) % N;
+      outRe[ny * N + nx] = re[y * N + x];
+      outIm[ny * N + nx] = im[y * N + x];
+    }
+  }
+  return { re: outRe, im: outIm };
+}
+
+function ifftshift2d(re, im) {
+  // same operation as shift for even lengths
+  return fftshift2d(re, im);
+}
+
+// ----- Phantom generation -----
+function makeGrid() {
+  const xs = new Float32Array(N * N);
+  const ys = new Float32Array(N * N);
+  const lin = new Float32Array(N);
+  for (let i = 0; i < N; i++) lin[i] = -1 + (2 * i) / (N - 1);
+  for (let y = 0; y < N; y++) {
+    for (let x = 0; x < N; x++) {
+      const idx = y * N + x;
+      xs[idx] = lin[x];
+      ys[idx] = lin[y];
+    }
+  }
+  return { xs, ys };
+}
+
+function makePhantom(xs, ys) {
+  // parameters: A, a, b, x0, y0, phi
+  const ellipses = [
+    [1, 0.69, 0.92, 0, 0, 0],
+    [-0.8, 0.6624, 0.874, 0, -0.0184, 0],
+    [-0.2, 0.11, 0.31, 0.22, 0, -18],
+    [-0.2, 0.16, 0.41, -0.22, 0, 18],
+    [0.1, 0.21, 0.25, 0, 0.35, 0],
+    [0.1, 0.046, 0.046, 0, 0.1, 0],
+    [0.1, 0.046, 0.046, 0, -0.1, 0],
+    [0.1, 0.046, 0.023, -0.08, -0.605, 0],
+    [0.1, 0.023, 0.023, 0.06, -0.605, 0],
+    [0.1, 0.023, 0.046, 0.06, -0.605, 90]
+  ];
+  const img = new Float32Array(N * N);
+  for (const [A, a, b, x0, y0, phiDeg] of ellipses) {
+    const phi = (phiDeg * Math.PI) / 180;
+    const cosP = Math.cos(phi);
+    const sinP = Math.sin(phi);
+    for (let i = 0; i < img.length; i++) {
+      const x = xs[i] - x0;
+      const y = ys[i] - y0;
+      const xr = cosP * x + sinP * y;
+      const yr = -sinP * x + cosP * y;
+      if ((xr * xr) / (a * a) + (yr * yr) / (b * b) <= 1) img[i] += A;
+    }
+  }
+  return img;
+}
+
+// ----- Projection + Fourier slice -----
+const { xs: gridX, ys: gridY } = makeGrid();
+const image = makePhantom(gridX, gridY);
+const { re: f2ReRaw, im: f2ImRaw } = fft2d(image, false);
+const { re: F2, im: F2i } = fftshift2d(f2ReRaw, f2ImRaw);
+
+
+function computeProjection(thetaDeg) {
+  const theta = (thetaDeg * Math.PI) / 180;
+  const cosT = Math.cos(theta);
+  const sinT = Math.sin(theta);
+  const proj = new Float32Array(N);
+  for (let idx = 0; idx < image.length; idx++) {
+    const xr = gridX[idx] * cosT + gridY[idx] * sinT;
+    const yr = -gridX[idx] * sinT + gridY[idx] * cosT;
+    const xi = Math.floor(((xr + 1) * 0.5) * (N - 1));
+    const yi = Math.floor(((yr + 1) * 0.5) * (N - 1));
+    if (xi >= 0 && xi < N && yi >= 0 && yi < N) {
+      const c = xi; // column accumulation
+      proj[c] += image[yi * N + xi];
+    }
+  }
+  return proj;
+}
+
+function computeF1(projection) {
+  const re = new Float32Array(projection);
+  const im = new Float32Array(re.length);
+  fft1d(re, im, false);
+  // shift to center
+  const out = new Float32Array(re.length);
+  const half = N / 2;
+  for (let i = 0; i < N; i++) {
+    const j = (i + half) % N;
+    out[i] = Math.hypot(re[j], im[j]);
+  }
+  return out;
+}
+
+// accumulation buffers (shifted domain)
+const accumRe = new Float32Array(N * N);
+const accumIm = new Float32Array(N * N);
+
+function addSlice(thetaDeg) {
+  const rad = (thetaDeg * Math.PI) / 180;
+  const cosT = Math.cos(rad);
+  const sinT = Math.sin(rad);
+  for (let i = 0; i < N; i++) {
+    const kx = Math.round(center + freq[i] * cosT);
+    const ky = Math.round(center + freq[i] * sinT);
+    if (kx >= 0 && kx < N && ky >= 0 && ky < N) {
+      const idx = ky * N + kx;
+      accumRe[idx] = F2[idx];
+      accumIm[idx] = F2i[idx];
+    }
+  }
+}
+
+function rebuildAccum(thetaDeg) {
+  accumRe.fill(0);
+  accumIm.fill(0);
+  const thetaInt = Math.round(thetaDeg);
+  for (let t = 0; t <= thetaInt; t++) addSlice(t);
+}
+
+function accumReconImage() {
+  // inverse FFT: need to unshift first
+  const { re: ishRe, im: ishIm } = ifftshift2d(accumRe, accumIm);
+  const { re, im } = fft2d(ishRe, true, ishIm); // inverse flag scales inside
+  const out = new Float32Array(re.length);
+  for (let i = 0; i < re.length; i++) out[i] = re[i];
+  return out;
+}
+
+// Fourier magnitude image
+function logMagF2() {
+  const out = new Float32Array(N * N);
+  for (let i = 0; i < out.length; i++) {
+    out[i] = Math.log(Math.hypot(F2[i], F2i[i]) + 1e-3);
+  }
+  return out;
+}
+
+// ----- WebGL helpers -----
+function createGL(canvas) {
+  const gl = canvas.getContext("webgl2", { antialias: false, preserveDrawingBuffer: true });
+  if (!gl) throw new Error("WebGL2 not supported");
+  const vsSrc = `#version 300 es\nprecision highp float;\nlayout(location=0) in vec2 pos;\nlayout(location=1) in vec2 uvIn;\nout vec2 vUV;\nvoid main(){vUV=uvIn;gl_Position=vec4(pos,0.0,1.0);}`;
+  const fsSrc = `#version 300 es\nprecision highp float;\nin vec2 vUV;\nuniform sampler2D uTex;\nout vec4 frag;\nvoid main(){float v=texture(uTex,vUV).r;frag=vec4(vec3(v),1.0);}`;
+  function compile(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+      throw new Error(gl.getShaderInfoLog(s) || "shader error");
+    }
+    return s;
+  }
+  const prog = gl.createProgram();
+  gl.attachShader(prog, compile(gl.VERTEX_SHADER, vsSrc));
+  gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, fsSrc));
+  gl.linkProgram(prog);
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog) || "link error");
+  gl.useProgram(prog);
+  const quad = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, quad);
+  gl.bufferData(
+    gl.ARRAY_BUFFER,
+    new Float32Array([
+      -1, -1, 0, 0,
+       1, -1, 1, 0,
+      -1,  1, 0, 1,
+       1,  1, 1, 1
+    ]),
+    gl.STATIC_DRAW
+  );
+  gl.enableVertexAttribArray(0);
+  gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 16, 0);
+  gl.enableVertexAttribArray(1);
+  gl.vertexAttribPointer(1, 2, gl.FLOAT, false, 16, 8);
+  gl.useProgram(prog);
+  gl.uniform1i(gl.getUniformLocation(prog, "uTex"), 0);
+  const tex = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  return { gl, prog, tex };
+}
+
+function toBytes(data, min = null, max = null) {
+  let mn = min ?? data[0];
+  let mx = max ?? data[0];
+  if (min === null || max === null) {
+    for (let i = 1; i < data.length; i++) {
+      if (data[i] < mn) mn = data[i];
+      if (data[i] > mx) mx = data[i];
+    }
+  }
+  const range = mx - mn || 1;
+  const out = new Uint8Array(data.length);
+  for (let i = 0; i < data.length; i++) {
+    out[i] = Math.max(0, Math.min(255, Math.round(((data[i] - mn) / range) * 255)));
+  }
+  return out;
+}
+
+function drawTexture(glCtx, texture, width, height, bytes) {
+  const { gl } = glCtx;
+  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+  gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.R8, width, height, 0, gl.RED, gl.UNSIGNED_BYTE, bytes);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+}
+
+// ----- Plots (2D canvas) -----
+function drawLinePlot(canvas, data, color = "#9ef0ff") {
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "#0d1018";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.strokeStyle = "#1e2330";
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 10; i++) {
+    const y = (canvas.height * i) / 10;
+    ctx.beginPath();
+    ctx.moveTo(0, y + 0.5);
+    ctx.lineTo(canvas.width, y + 0.5);
+    ctx.stroke();
+  }
+  const mn = Math.min(...data);
+  const mx = Math.max(...data);
+  const range = mx - mn || 1;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  for (let i = 0; i < data.length; i++) {
+    const x = (i / (data.length - 1)) * canvas.width;
+    const y = canvas.height - ((data[i] - mn) / range) * canvas.height;
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+}
+
+function drawOverlayLine(canvas, thetaDeg) {
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.strokeStyle = "rgba(255,80,80,0.9)";
+  ctx.lineWidth = 2;
+  const rad = (thetaDeg * Math.PI) / 180;
+  const dx = (canvas.width / 2) * Math.cos(rad);
+  const dy = (canvas.height / 2) * Math.sin(rad);
+  const nx = -Math.sin(rad);
+  const ny = Math.cos(rad);
+  const cx = canvas.width / 2;
+  const cy = canvas.height / 2;
+  const spacing = canvas.width / 10;
+  const starts = [];
+  for (let k = -2; k <= 2; k++) {
+    const offx = k * spacing * nx;
+    const offy = k * spacing * ny;
+    const sx = cx - dx + offx;
+    const sy = cy - dy + offy;
+    const ex = cx + dx + offx;
+    const ey = cy + dy + offy;
+    starts.push([sx, sy]);
+    ctx.beginPath();
+    ctx.moveTo(sx, sy);
+    ctx.lineTo(ex, ey);
+    ctx.stroke();
+  }
+  // connect beam starts to emphasize source edge
+  if (starts.length) {
+    ctx.beginPath();
+    ctx.moveTo(starts[0][0], starts[0][1]);
+    for (let i = 1; i < starts.length; i++) ctx.lineTo(starts[i][0], starts[i][1]);
+    ctx.strokeStyle = "rgba(255,120,120,0.8)";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  }
+}
+
+function drawSliceLine(canvas, thetaDeg) {
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.strokeStyle = "rgba(158,240,255,0.9)";
+  ctx.lineWidth = 2;
+  const rad = (thetaDeg * Math.PI) / 180;
+  const dx = (canvas.width / 2) * Math.cos(rad);
+  const dy = (canvas.height / 2) * Math.sin(rad);
+  const cx = canvas.width / 2;
+  const cy = canvas.height / 2;
+  ctx.beginPath();
+  ctx.moveTo(cx - dx, cy - dy);
+  ctx.lineTo(cx + dx, cy + dy);
+  ctx.stroke();
+}
+
+// ----- Setup GL canvases -----
+const glOriginal = createGL(document.getElementById("canvas-original"));
+const glF2 = createGL(document.getElementById("canvas-f2"));
+const glRecon = createGL(document.getElementById("canvas-recon"));
+
+// static renders
+const imageBytes = toBytes(image);
+drawTexture(glOriginal, glOriginal.tex, N, N, imageBytes);
+const logF2 = logMagF2();
+const logBytes = toBytes(logF2);
+drawTexture(glF2, glF2.tex, N, N, logBytes);
+
+function update(thetaDeg) {
+  angleValue.textContent = `${thetaDeg}°`;
+  const proj = computeProjection(thetaDeg);
+  const f1mag = computeF1(proj);
+  drawLinePlot(document.getElementById("canvas-projection"), proj, "#ff9f6e");
+  drawLinePlot(document.getElementById("canvas-f1"), f1mag, "#9ef0ff");
+
+  // overlays
+  drawOverlayLine(document.getElementById("overlay-original"), thetaDeg);
+  drawSliceLine(document.getElementById("overlay-slice"), thetaDeg);
+
+  // accumulated reconstruction in Fourier domain
+  rebuildAccum(thetaDeg);
+  const recon = accumReconImage();
+  const reconBytes = toBytes(recon);
+  drawTexture(glRecon, glRecon.tex, N, N, reconBytes);
+}
+
+update(0);
+angleSlider.addEventListener("input", () => update(parseInt(angleSlider.value, 10)));
+
+  </script>
+</body>
+</html>
