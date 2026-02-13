@@ -3,152 +3,250 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Peter Zsoldos | AI & Robotics Researcher</title>
+    <title>Peter Zsoldos | AI & Robotics Research Portfolio</title>
     <style>
         :root {
             --primary: #2563eb;
-            --dark: #1e293b;
-            --light: #f8fafc;
-            --text: #334155;
+            --secondary: #64748b;
+            --dark: #0f172a;
+            --bg: #f8fafc;
+            --accent: #3b82f6;
         }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: var(--text);
-            background-color: var(--light);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.7;
+            color: #334155;
+            background-color: var(--bg);
             margin: 0;
-            padding: 0;
         }
-        header {
+        .header {
             background: var(--dark);
             color: white;
-            padding: 4rem 2rem;
+            padding: 6rem 2rem;
             text-align: center;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.025em;
+        }
+        .header p {
+            font-size: 1.1rem;
+            color: #cbd5e1;
+            max-width: 600px;
+            margin: 0.5rem auto;
         }
         .container {
             max-width: 900px;
-            margin: auto;
-            padding: 2rem;
+            margin: -4rem auto 4rem;
+            padding: 0 1.5rem;
         }
-        .profile-img {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            border: 4px solid var(--primary);
-            object-fit: cover;
-        }
-        h1 { margin: 1rem 0 0.5rem; }
-        .contact-info { margin-bottom: 2rem; }
-        .contact-info a { color: #60a5fa; text-decoration: none; margin: 0 10px; }
-        section {
-            background: white;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        h2 {
-            color: var(--primary);
-            border-bottom: 2px solid var(--primary);
-            padding-bottom: 0.5rem;
-        }
-        .job, .edu { margin-bottom: 1.5rem; }
-        .date { font-weight: bold; color: var(--primary); }
-        ul { padding-left: 1.2rem; }
-        .tag {
-            display: inline-block;
-            background: #e2e8f0;
-            padding: 0.2rem 0.8rem;
-            border-radius: 15px;
-            margin: 0.2rem;
+        .section-title {
             font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--secondary);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .project-card {
+            background: white;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: transform 0.2s ease;
+        }
+        .project-card:hover {
+            transform: translateY(-4px);
+        }
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        .project-title {
+            color: var(--dark);
+            margin: 0;
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+        .project-org {
+            background: #dbeafe;
+            color: var(--primary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .project-description {
+            margin-bottom: 1.5rem;
+        }
+        .project-list {
+            padding-left: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+        .project-list li {
+            margin-bottom: 0.5rem;
+        }
+        .tag-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .tag {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 0.3rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .links {
+            margin-top: 1.5rem;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 1rem;
+        }
+        .btn-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .btn-link:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+        footer {
+            text-align: center;
+            padding-bottom: 4rem;
+            color: var(--secondary);
+            font-size: 0.9rem;
+        }
+        @media (max-width: 600px) {
+            .project-header { flex-direction: column; gap: 0.5rem; }
         }
     </style>
 </head>
 <body>
 
-<header>
-    <img src="your-image.jpg" alt="Peter Zsoldos" class="profile-img">
-    <h1>Peter Zsoldos </h1>
-    <p>AI Researcher | Robotics Engineer | Master's Student</p>
-    <div class="contact-info">
-        📍 Sundsvall, Sweden  | 
-        🔗 <a href="https://www.linkedin.com/in/peter--zsoldos/">LinkedIn</a> 
-    </div>
-</header>
-
-<div class="container">
-    <section id="about">
-        <h2>Career Objective</h2>
-        <p>My goal is to leverage my experience in AI, robotics, and computer graphics research to address and solve complex industrial challenges.</p>
-    </section>
-
-    <section id="experience">
-        <h2>Work Experience</h2>
-        <div class="job">
-            <h3>SZTAKI Artificial Intelligence National Laboratory </h3>
-            <p class="date">July 2024 – Present </p>
-            <ul>
-                <li>Researched radical AI-driven scientific methodologies with OpenAI involvement as part of the AI Squad.</li>
-                <li>Implemented an intelligent multimodal LLM system on the Boston Dynamics Spot robot for voice control.</li>
-                <li>Trained reinforcement learning models in IsaacLab for Spot robot task execution.</li>
-                <li>Developed a RAG-based chat interface allowing researchers to interact with databases via SQL-writing LLMs.</li>
-            </ul>
-        </div>
-        <div class="job">
-            <h3>Enliven Systems Kft. </h3>
-            <p class="date">January 2024 – June 2024 </p>
-            <ul>
-                <li>Researched machine learning applications for contract drafting.</li>
-                <li>Authored, tested, and executed system specifications.</li>
-            </ul>
-        </div>
-        <div class="job">
-            <h3>Startup Co-Founder </h3>
-            <p>Co-founded a Hungarian startup building exoskeletons for people with neurodegenerative diseases.</p>
-        </div>
-    </section>
-
-    <section id="education">
-        <h2>Education</h2>
-        <div class="edu">
-            <h3>Erasmus Mundus Joint Master Degree </h3>
-            <p>Mid Sweden University & Tampere University | 2025 – 2027 (Expected) </p>
-        </div>
-        <div class="edu">
-            <h3>Computer Science BSc </h3>
-            <p>Eötvös Loránd University | 2022 – 2025 </p>
-        </div>
-    </section>
-
-    <section id="skills">
-        <h2>Technical Skills</h2>
-        <div>
-            <strong>Languages:</strong> 
-            <span class="tag">Python</span> <span class="tag">C++</span> <span class="tag">Java</span> <span class="tag">JavaScript</span> <span class="tag">C#</span> 
-        </div>
-        <div style="margin-top:1rem;">
-            <strong>AI & ML:</strong> 
-            <span class="tag">Neural Networks</span> <span class="tag">Computer Vision</span> <span class="tag">NLP</span> <span class="tag">LLMs</span> 
-        </div>
-        <div style="margin-top:1rem;">
-            <strong>Tools:</strong> 
-            <span class="tag">Docker</span> <span class="tag">Git</span> <span class="tag">CI/CD</span> <span class="tag">PyTorch</span> <span class="tag">TensorFlow</span> 
-        </div>
-    </section>
-
-    <section id="publications">
-        <h2>Publications & Research</h2>
-        <ul>
-            <li><strong>Deep Learning-Based Implementation of Telerobotic Control with Gesture Recognition from EMG Signals</strong> - Published in IEEE.</li>
-            <li>Multi-camera multi-object tracking for ruffs with Max Planck Institute.</li>
-            <li>Real-time robotics teleoperation via RNN classification of EMG signals.</li>
-        </ul>
-    </section>
+<div class="header">
+    <h1>Peter Zsoldos</h1>
+    <p>AI & Robotics Researcher | Erasmus Mundus Scholar</p>
+    <p>Sundsvall, Sweden • <a href="mailto:zsoldosp44@gmail.com" style="color: #60a5fa; text-decoration: none;">zsoldosp44@gmail.com</a></p>
 </div>
 
-<footer style="text-align: center; padding: 2rem; color: #64748b;">
-    <p>&copy; 2026 Peter Zsoldos. All rights reserved.</p>
+<div class="container">
+    <div class="section-title">Selected Projects & Research</div>
+
+    <div class="project-card">
+        <div class="project-header">
+            <h2 class="project-title">Multimodal LLM Control for Boston Dynamics Spot</h2>
+            <span class="project-org">SZTAKI AI Lab</span>
+        </div>
+        <div class="project-description">
+            Implemented a radical AI-driven system for the Boston Dynamics Spot robot, focusing on voice-controlled task execution.
+        </div>
+        <ul class="project-list">
+            <li>Developed an intelligent multimodal LLM system for intuitive voice control.</li>
+            <li>Trained reinforcement learning models in IsaacLab for complex robot maneuvering.</li>
+            <li>Researched AI-driven scientific methodologies in collaboration with OpenAI's frameworks.</li>
+        </ul>
+        <div class="tag-group">
+            <span class="tag">Reinforcement Learning</span>
+            <span class="tag">IsaacLab</span>
+            <span class="tag">LLMs</span>
+            <span class="tag">Python</span>
+        </div>
+    </div>
+
+    <div class="project-card">
+        <div class="project-header">
+            <h2 class="project-title">Real-Time Telerobotic EMG Classification</h2>
+            <span class="project-org">Published Research</span>
+        </div>
+        <div class="project-description">
+            Advanced human-robot interaction through gesture recognition derived from Electromyography (EMG) signals.
+        </div>
+        <ul class="project-list">
+            <li>Built a Recurrent Neural Network (RNN) architecture for real-time signal classification.</li>
+            <li>Implemented gesture-to-command mapping for seamless robotic teleoperation.</li>
+            <li>Published findings in IEEE: "Deep Learning-Based Implementation of Telerobotic Control."</li>
+        </ul>
+        <div class="tag-group">
+            <span class="tag">Deep Learning</span>
+            <span class="tag">RNNs</span>
+            <span class="tag">Signal Processing</span>
+            <span class="tag">C++</span>
+        </div>
+        <div class="links">
+            <a href="https://ieeexplore.ieee.org/document/10977583" class="btn-link">Read IEEE Publication →</a>
+        </div>
+    </div>
+
+    <div class="project-card">
+        <div class="project-header">
+            <h2 class="project-title">RAG-Powered Scientific SQL Interface</h2>
+            <span class="project-org">HUN-REN AI1Science</span>
+        </div>
+        <div class="project-description">
+            Bridging the gap between researchers and data through natural language processing.
+        </div>
+        <ul class="project-list">
+            <li>Designed a Retrieval-Augmented Generation (RAG) architecture for high-accuracy query generation.</li>
+            <li>Developed a chat interface that translates complex research questions into SQL queries.</li>
+        </ul>
+        <div class="tag-group">
+            <span class="tag">NLP</span>
+            <span class="tag">PostgreSQL</span>
+            <span class="tag">RAG</span>
+            <span class="tag">Vector Databases</span>
+        </div>
+    </div>
+
+    <div class="project-card">
+        <div class="project-header">
+            <h2 class="project-title">Multi-Object Tracking for Biological Intelligence</h2>
+            <span class="project-org">Max Planck Collaboration</span>
+        </div>
+        <div class="project-description">
+            High-precision computer vision project for environmental and biological monitoring.
+        </div>
+        <ul class="project-list">
+            <li>Developed multi-camera tracking systems for biological specimens in the wild.</li>
+            <li>Analyzed video compression codec impacts on tracking performance and data integrity.</li>
+        </ul>
+        <div class="tag-group">
+            <span class="tag">Computer Vision</span>
+            <span class="tag">Video Codecs</span>
+            <span class="tag">Data Analysis</span>
+        </div>
+    </div>
+
+    <div class="project-card">
+        <div class="project-header">
+            <h2 class="project-title">Assistive Exoskeleton Development</h2>
+            <span class="project-org">Startup Co-Founder</span>
+        </div>
+        <div class="project-description">
+            Focused on hardware-software synergy to aid those with neurodegenerative diseases.
+        </div>
+        <ul class="project-list">
+            <li>Co-founded a startup to design wearable robotic solutions.</li>
+            <li>Integrated sensor feedback loops with mechanical actuators for mobility assistance.</li>
+        </ul>
+        <div class="tag-group">
+            <span class="tag">Robotics</span>
+            <span class="tag">C</span>
+            <span class="tag">Embedded Systems</span>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <p>&copy; 2026 Peter Zsoldos • Built for the future of AI & Robotics</p>
 </footer>
 
 </body>
