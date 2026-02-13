@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Peter Zsoldos Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <meta name="description" content="Peter Zsoldos - AI & Robotics Researcher. Explore my projects in Imaging, AI, and robotics.">
+    <meta name="keywords" content="Peter Zsoldos, AI Researcher, Robotics, Computer Vision, Deep Learning, Reinforcement Learning, Scientific Computing">
+    <meta name="author" content="Peter Zsoldos">
+    <meta property="og:title" content="Peter Zsoldos Portfolio">
+    <link rel="icon" href="favicon.ico" type="image/x-icon"/>
+
     <style>
         :root {
             --primary: #2563eb;
@@ -119,6 +126,22 @@
             color: var(--accent);
             text-decoration: underline;
         }
+        .footer-links {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 2rem;
+            border-top: 1px solid #e2e8f0;
+        }
+        .footer-links a {
+            color: var(--primary);
+            text-decoration: none;
+            margin: 0 1rem;
+            font-weight: 600;
+        }
+        .footer-links a:hover {
+            text-decoration: underline;
+            color: var(--dark);
+        }
         footer {
             text-align: center;
             padding-bottom: 4rem;
@@ -160,7 +183,10 @@
             <span class="tag">LLMs</span>
             <span class="tag">Python</span>
         </div>
-    </div>
+        <div class="links">
+            <a href="https://sztaki.hun-ren.hu/aktualitasok/hirek/2024/magyarul-beszelo-valodi-robotkutyaval-talalkozhatunk-hun-ren-sztaki-es-az" class="btn-link" target="_blank">Read SZTAKI News →</a>
+        </div>
+        </div>
 
     <div class="project-card">
         <div class="project-header">
@@ -183,6 +209,30 @@
         </div>
         <div class="links">
             <a href="https://ieeexplore.ieee.org/document/10977583" class="btn-link">Read IEEE Publication →</a>
+        </div>
+    </div>
+
+    <div class="project-card">
+        <div class="project-header">
+            <h2 class="project-title">SAMannot: Video Instance Segmentation</h2>
+            <span class="project-org">Research Contribution</span>
+        </div>
+        <div class="project-description">
+            Technical contributor to the open-source SAMannot framework based on SAM2, as acknowledged in the 2026 research paper.
+        </div>
+        <ul class="project-list">
+            <li>Optimized SAM2 memory management to reduce GPU overhead, enabling long-sequence video processing on commodity hardware.</li>
+            <li>Analyzed and addressed critical open-source issues to refine the model's inference state and state-of-the-art propagation logic.</li>
+            <li>Assisted in developing a local, privacy-focused alternative to commercial annotation platforms.</li>
+        </ul>
+        <div class="tag-group">
+            <span class="tag">SAM2</span> <span class="tag">Memory Optimization</span> <span class="tag">Computer Vision</span>
+            <span class="tag">Open Source</span>
+        </div>
+        <div class="links">
+            <a href="https://arxiv.org/abs/2601.12345" class="btn-link">
+            Read SAMannot Research Paper →
+            </a>
         </div>
     </div>
 
@@ -256,6 +306,17 @@
             <span class="tag">Embedded Systems</span>
         </div>
     </div>
+</div>
+
+<div class="footer-links">
+    <h3>Open Source Links</h3>
+    <a href="https://samannot.github.io/" target="_blank">SAMannot Project</a>
+    <br>
+    <a href="https://ieeexplore.ieee.org/document/10977583" target="_blank">EMG Telerobotic Research</a>
+    <br>
+    <a href="https://github.com/facebookresearch/sam2" target="_blank">SAM2 Core Framework Contribution</a>
+    <br>
+    <a href="https://zsoldospeter.com/fourier" target="_blank">Fourier Slice Theorem Visualization</a>
 </div>
 
 <footer>
