@@ -561,10 +561,11 @@ function drawSliceLine(canvas, thetaDeg) {
   ctx.strokeStyle = "rgba(158,240,255,0.9)";
   ctx.lineWidth = 2;
   const rad = (thetaDeg * Math.PI) / 180;
-  const dx = (canvas.width / 2) * Math.cos(rad);
-  const dy = (canvas.height / 2) * Math.sin(rad);
-  const cx = canvas.width / 2;
-  const cy = canvas.height / 2;
+  const radius = Math.min(canvas.width, canvas.height) * 0.5;
+  const cx = canvas.width * 0.5;
+  const cy = canvas.height * 0.5+10;
+  const dx = radius * Math.cos(rad);
+  const dy = radius * Math.sin(rad);
   ctx.beginPath();
   ctx.moveTo(cx - dx, cy - dy);
   ctx.lineTo(cx + dx, cy + dy);
