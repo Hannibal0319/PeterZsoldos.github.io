@@ -30,6 +30,7 @@
       flex-direction: column;
       gap: 16px;
       padding: 16px;
+      overflow-x: hidden;
     }
     header {
       display: flex;
@@ -58,26 +59,27 @@
     .grid {
       display: flex;
       flex-direction: row;
-      flex-wrap: nowrap;
+      flex-wrap: wrap;
       justify-content: center;
       align-items: flex-start;
       gap: 12px;
       width: 100%;
       margin: 0 auto;
-      overflow-x: auto;
       padding-bottom: 8px;
     }
     .card {
       background: var(--panel);
       border: 1px solid #1e2330;
       border-radius: 12px;
-      padding: 14px;
+      padding: 0px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.4);
       display: flex;
       flex-direction: column;
       gap: 8px;
-      flex: 1 1 220px;
-      width: clamp(220px, 19vw, 260px);
+      flex: 1 1 240px;
+      width: clamp(240px, 22vw, 280px);
+      height: fit-content;
+      max-width: 360px;
     }
     .card h3 {
       margin: 0;
@@ -123,9 +125,13 @@
       font-size: 16px;
       line-height: 1.5;
     }
-    @media (max-width: 700px) {
-      header { flex-direction: column; align-items: flex-start; }
-      .controls { grid-template-columns: 1fr; }
+    @media (max-width: 900px) {
+      h1 { font-size: 20px; }
+      .subtitle { font-size: 13px; }
+      .grid { flex-direction: column; align-items: center; }
+      .card { width: 100%; max-width: 520px; }
+      .controls { position: sticky; bottom: 8px; grid-template-columns: 1fr; width: 100%; }
+      .controls input[type=range] { width: 100%; }
     }
   </style>
 </head>
@@ -487,6 +493,18 @@ function drawTexture(glCtx, texture, width, height, bytes) {
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 }
 
+function resizeGLCanvas(glCtx) {
+  const { gl } = glCtx;
+  const dpr = window.devicePixelRatio || 1;
+  const displayWidth = Math.max(1, Math.round(gl.canvas.clientWidth * dpr));
+  const displayHeight = Math.max(1, Math.round(gl.canvas.clientHeight * dpr));
+  if (gl.canvas.width !== displayWidth || gl.canvas.height !== displayHeight) {
+    gl.canvas.width = displayWidth;
+    gl.canvas.height = displayHeight;
+  }
+  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+}
+
 // ----- Plots (2D canvas) -----
 function drawLinePlot(canvas, data, color = "#9ef0ff") {
   const ctx = canvas.getContext("2d");
@@ -517,27 +535,40 @@ function drawLinePlot(canvas, data, color = "#9ef0ff") {
   ctx.stroke();
 }
 
+function ensureCanvasSize(canvas) {
+  const dpr = window.devicePixelRatio || 1;
+  const displayWidth = Math.max(1, Math.round(canvas.clientWidth * dpr));
+  const displayHeight = Math.max(1, Math.round(canvas.clientHeight * dpr));
+  if (canvas.width !== displayWidth || canvas.height !== displayHeight) {
+    canvas.width = displayWidth;
+    canvas.height = displayHeight;
+  }
+  return { width: canvas.width, height: canvas.height };
+}
+
 function drawOverlayLine(canvas, thetaDeg) {
   const ctx = canvas.getContext("2d");
+  const { width, height } = ensureCanvasSize(canvas);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.strokeStyle = "rgba(255,80,80,0.9)";
   ctx.lineWidth = 2;
   const rad = (thetaDeg * Math.PI) / 180;
-  const dx = (canvas.width / 2) * Math.cos(rad);
-  const dy = (canvas.height / 2) * Math.sin(rad);
+  const dx = (width / 2) * Math.cos(rad); // half diagonal length x
+  const dy = (height / 2) * Math.sin(rad); // half diagonal length y
   const nx = -Math.sin(rad);
   const ny = Math.cos(rad);
-  const cx = canvas.width / 2;
-  const cy = canvas.height / 2;
-  const spacing = canvas.width / 10;
+  const cx = width / 2; // center of image x
+  const cy = height / 2; // center of image y
+  const spacing = width / 10;
   const starts = [];
   for (let k = -2; k <= 2; k++) {
     const offx = k * spacing * nx;
     const offy = k * spacing * ny;
-    const sx = cx - dx + offx;
-    const sy = cy - dy + offy;
-    const ex = cx + dx + offx;
-    const ey = cy + dy + offy;
+    const sx = cx - dx + offx; // start point of ray x
+    const sy = cy - dy + offy; // start point of ray y
+
+    const ex = cx + dx + offx; // end point of ray x
+    const ey = cy + dy + offy; // end point of ray y
     starts.push([sx, sy]);
     ctx.beginPath();
     ctx.moveTo(sx, sy);
@@ -557,19 +588,29 @@ function drawOverlayLine(canvas, thetaDeg) {
 
 function drawSliceLine(canvas, thetaDeg) {
   const ctx = canvas.getContext("2d");
+  const { width, height } = ensureCanvasSize(canvas);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.strokeStyle = "rgba(158,240,255,0.9)";
   ctx.lineWidth = 2;
   const rad = (thetaDeg * Math.PI) / 180;
-  const radius = Math.min(canvas.width, canvas.height) * 0.5;
-  const cx = canvas.width * 0.5;
-  const cy = canvas.height * 0.5+10;
+  const radius = Math.min(width, height) * 0.5;
+  console.log("drawing slice line at angle", thetaDeg, "degrees");
+  console.log("canvas size:", width, height, "radius:", radius);
+  const cx =  width / 2;
+  const cy = height / 2;
+  // account for cards width so line is on the canvas center, not the texture center
+
   const dx = radius * Math.cos(rad);
   const dy = radius * Math.sin(rad);
   ctx.beginPath();
   ctx.moveTo(cx - dx, cy - dy);
   ctx.lineTo(cx + dx, cy + dy);
   ctx.stroke();
+  ctx.beginPath();
+  console.log(width, height, radius);
+  console.log(cx, cy, dx, dy);
+  ctx.stroke();
+
 }
 
 // ----- Setup GL canvases -----
@@ -579,10 +620,16 @@ const glRecon = createGL(document.getElementById("canvas-recon"));
 
 // static renders
 const imageBytes = toBytes(image);
-drawTexture(glOriginal, glOriginal.tex, N, N, imageBytes);
 const logF2 = logMagF2();
 const logBytes = toBytes(logF2);
-drawTexture(glF2, glF2.tex, N, N, logBytes);
+function drawStatic() {
+  resizeGLCanvas(glOriginal);
+  resizeGLCanvas(glF2);
+  resizeGLCanvas(glRecon);
+  drawTexture(glOriginal, glOriginal.tex, N, N, imageBytes);
+  drawTexture(glF2, glF2.tex, N, N, logBytes);
+}
+drawStatic();
 
 function update(thetaDeg) {
   angleValue.textContent = `${thetaDeg}°`;
@@ -590,7 +637,6 @@ function update(thetaDeg) {
   const f1mag = computeF1(proj);
   drawLinePlot(document.getElementById("canvas-projection"), proj, "#ff9f6e");
   drawLinePlot(document.getElementById("canvas-f1"), f1mag, "#9ef0ff");
-
   // overlays
   drawOverlayLine(document.getElementById("overlay-original"), thetaDeg);
   drawSliceLine(document.getElementById("overlay-slice"), thetaDeg);
@@ -604,6 +650,10 @@ function update(thetaDeg) {
 
 update(0);
 angleSlider.addEventListener("input", () => update(parseInt(angleSlider.value, 10)));
+window.addEventListener("resize", () => {
+  drawStatic();
+  update(parseInt(angleSlider.value, 10));
+});
 
   </script>
 </body>
