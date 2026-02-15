@@ -493,6 +493,16 @@ function drawTexture(glCtx, texture, width, height, bytes) {
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 }
 
+function minMax(data) {
+  let mn = data[0];
+  let mx = data[0];
+  for (let i = 1; i < data.length; i++) {
+    if (data[i] < mn) mn = data[i];
+    if (data[i] > mx) mx = data[i];
+  }
+  return { mn, mx };
+}
+
 function resizeGLCanvas(glCtx) {
   const { gl } = glCtx;
   const dpr = window.devicePixelRatio || 1;
@@ -592,23 +602,15 @@ function drawSliceLine(canvas, thetaDeg) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.strokeStyle = "rgba(158,240,255,0.9)";
   ctx.lineWidth = 2;
-  const rad = (thetaDeg * Math.PI) / 180;
+  const rad = (-thetaDeg * Math.PI) / 180;
   const radius = Math.min(width, height) * 0.5;
-  console.log("drawing slice line at angle", thetaDeg, "degrees");
-  console.log("canvas size:", width, height, "radius:", radius);
-  const cx =  width / 2;
+  const cx = width / 2;
   const cy = height / 2;
-  // account for cards width so line is on the canvas center, not the texture center
-
   const dx = radius * Math.cos(rad);
   const dy = radius * Math.sin(rad);
   ctx.beginPath();
   ctx.moveTo(cx - dx, cy - dy);
   ctx.lineTo(cx + dx, cy + dy);
-  ctx.stroke();
-  ctx.beginPath();
-  console.log(width, height, radius);
-  console.log(cx, cy, dx, dy);
   ctx.stroke();
 
 }
@@ -621,13 +623,15 @@ const glRecon = createGL(document.getElementById("canvas-recon"));
 // static renders
 const imageBytes = toBytes(image);
 const logF2 = logMagF2();
-const logBytes = toBytes(logF2);
+const { mn: logMin, mx: logMax } = minMax(logF2);
+const logBytes = toBytes(logF2, logMin, logMax);
+const emptyLogBytes = toBytes(new Float32Array(N * N), logMin, logMax);
 function drawStatic() {
   resizeGLCanvas(glOriginal);
   resizeGLCanvas(glF2);
   resizeGLCanvas(glRecon);
   drawTexture(glOriginal, glOriginal.tex, N, N, imageBytes);
-  drawTexture(glF2, glF2.tex, N, N, logBytes);
+  drawTexture(glF2, glF2.tex, N, N, emptyLogBytes);
 }
 drawStatic();
 
@@ -643,6 +647,13 @@ function update(thetaDeg) {
 
   // accumulated reconstruction in Fourier domain
   rebuildAccum(thetaDeg);
+  const accumLog = new Float32Array(N * N);
+  for (let i = 0; i < accumLog.length; i++) {
+    accumLog[i] = Math.log(Math.hypot(accumRe[i], accumIm[i]) + 1e-3);
+  }
+  const accumBytes = toBytes(accumLog, logMin, logMax);
+  drawTexture(glF2, glF2.tex, N, N, accumBytes);
+
   const recon = accumReconImage();
   const reconBytes = toBytes(recon);
   drawTexture(glRecon, glRecon.tex, N, N, reconBytes);
