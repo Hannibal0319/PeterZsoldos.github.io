@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Verged Epipolar Geometry</title>
+    <style>
+        body { margin: 0; background: #050505; color: #fff; font-family: 'Segoe UI', sans-serif; display: flex; overflow: hidden; }
+        #viewport { width: 75%; height: 100vh; }
+        #sidebar { width: 25%; height: 100vh; background: #111; padding: 25px; border-left: 2px solid #333; box-sizing: border-box; overflow-y: auto; }
+        .label { color: #00d4ff; font-weight: bold; }
+        .desc { font-size: 0.85em; color: #888; margin-bottom: 15px; }
+        .math { font-family: monospace; color: #ff00ff; }
+        .btn { width: 100%; padding: 10px 14px; margin-top: 15px; background: #00d4ff; color: #050505; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: background 0.2s ease; }
+        .btn:hover { background: #00b2d1; }
+        .toggle { display: block; font-size: 0.9em; color: #ccc; margin: 6px 0; }
+        .toggle input { margin-right: 8px; }
+        .color-cyan { color: #00d4ff; font-weight: 700; }
+        .color-magenta { color: #ff00ff; font-weight: 700; }
+        .color-red { color: #ff0000; font-weight: 700; }
+        .color-green { color: #00ff88; font-weight: 700; }
+        .color-baseline { color: #00ff00; font-weight: 700; }
+    </style>
+</head>
+<body>
+
+<div id="viewport"></div>
+<div id="sidebar">
+    <h2>Verged Cameras</h2>
+    <p class="desc">Two cameras are pointed slightly toward each other, like your eyes when you fixate on a nearby object. The green plane is the epipolar plane defined by both camera centers and the moving 3D point.</p>
+
+    <div class="label">Color coding</div>
+    <p class="desc">Cyan dots mark the <span class="color-cyan">camera centers and epipoles</span>, magenta lines are <span class="color-magenta">epipolar lines</span>, red dots show the <span class="color-red">projected point</span>, the green transparent sheet is the <span class="color-green">epipolar plane</span>, and the dashed green line is the <span class="color-baseline">baseline</span> across both cameras.</p>
+    
+    <div class="label">Converging Lines</div>
+    <p class="desc">Each magenta epipolar line lies on a sensor and passes through the epipole. As the point moves, its image is constrained to slide along this line—never leaving it.</p>
+
+    <div class="label">How to read this</div>
+    <p class="desc">Follow the green plane: it always contains both camera centers and the moving point. The red projections stay on magenta epipolar lines that all originate at the cyan epipoles. Pause the animation if you want to examine a specific position.</p>
+
+    <div class="label">The Epipole (e)</div>
+    <p class="desc">The cyan dot on each sensor marks where the baseline meets that sensor. All epipolar lines radiate from this spot.</p>
+
+    <div class="label">Projected Point (p)</div>
+    <p class="desc">The red dots are the projections of the moving 3D point onto each sensor. They always remain on their corresponding epipolar lines and share the same epipolar plane.</p>
+
+    <div class="label">Visibility</div>
+    <label class="toggle"><input id="togglePointL" type="checkbox" checked>Show left image point</label>
+    <label class="toggle"><input id="togglePointR" type="checkbox" >Show right image point</label>
+    <label class="toggle"><input id="toggleLineL" type="checkbox" >Show left epipolar line</label>
+    <label class="toggle"><input id="toggleLineR" type="checkbox" checked>Show right epipolar line</label>
+
+    <button id="pauseBtn" class="btn">Pause animation</button>
+</div>
+
+<script type="module">
+    import * as THREE from 'https://cdn.skypack.dev/three@0.132.2';
+    import { OrbitControls } from 'https://cdn.skypack.dev/three@0.132.2/examples/jsm/controls/OrbitControls.js';
+
+    let scene, camera, renderer, controls;
+    let epipolarPlane, pointP_mesh, rayL, rayR;
+    let projL, projR, epiLineL, epiLineR;
+    let sensorL, sensorR;
+    let epipoleL, epipoleR;
+    let togglePointL, togglePointR, toggleLineL, toggleLineR;
+    let isPaused = false;
+    const clock = new THREE.Clock();
+    let elapsedTime = 0;
+
+    const Ol = new THREE.Vector3(-4, 0, 0);
+    const Or = new THREE.Vector3(4, 0, 0);
+    const angle = Math.PI / 9; // 20 degrees inward
+    const f = 2.5; // Focal length
+
+    init();
+    animate();
+
+    function init() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(60, (window.innerWidth * 0.75) / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 8, -12);
+
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth * 0.75, window.innerHeight);
+        document.getElementById('viewport').appendChild(renderer.domElement);
+
+        controls = new OrbitControls(camera, renderer.domElement);
+        scene.add(new THREE.GridHelper(20, 20, 0x444444, 0x888888));
+
+        const ambient = new THREE.AmbientLight(0xffffff, 0.35);
+        scene.add(ambient);
+        const keyLight = new THREE.DirectionalLight(0xffffff, 0.75);
+        keyLight.position.set(6, 10, -6);
+        scene.add(keyLight);
+        const fillLight = new THREE.DirectionalLight(0x88ccff, 0.4);
+        fillLight.position.set(-8, 4, 5);
+        scene.add(fillLight);
+
+        // Make dark gray background for better contrast with the elements
+        renderer.setClearColor(0x222222, 1);
+
+        // 1. Camera Centers (O)
+        createSphere(Ol, 0.2, 0x00ffff);
+        createSphere(Or, 0.2, 0x00ffff);
+
+        // 2. Baseline
+        const baselineGeom = new THREE.BufferGeometry().setFromPoints([Ol, Or]);
+        // light green dashed line for baseline for better visibility
+        const baseline = new THREE.Line(baselineGeom, new THREE.LineDashedMaterial({ color: 0x00ff00, dashSize: 0.5, gapSize: 0.3 }));
+        baseline.computeLineDistances();
+        scene.add(baseline);
+
+        // 3. Tilted Sensors
+        sensorL = createSensor(Ol, angle);
+        sensorR = createSensor(Or, -angle);
+
+        // 4. Epipoles (Where baseline hits sensor)
+        // Mathematically: project Or onto SensorL and Ol onto SensorR
+        epipoleL = createEpipole(sensorL, Ol, Or);
+        epipoleR = createEpipole(sensorR, Or, Ol);
+
+        // 5. Epipolar Plane
+        epipolarPlane = new THREE.Mesh(new THREE.BufferGeometry(), new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.15, side: THREE.DoubleSide }));
+        scene.add(epipolarPlane);
+
+        // 6. Dynamic elements
+        projL = createSphere(new THREE.Vector3(), 0.1, 0xff0000);
+        projR = createSphere(new THREE.Vector3(), 0.1, 0xff0000);
+        // Epipolar lines will be drawn from the epipole through the projected point, but we will just draw a line segment for simplicity
+        // Dark magenta for epipolar lines, light red for rays from camera to point
+        epiLineL = createLine(0xff00ff);
+        epiLineR = createLine(0xff00ff);
+        rayL = createLine(0xff5555);
+        rayR = createLine(0xff5555);
+        pointP_mesh = createSphere(new THREE.Vector3(), 0.25, 0x00ff88);
+
+        const pauseBtn = document.getElementById('pauseBtn');
+        pauseBtn.addEventListener('click', () => {
+            isPaused = !isPaused;
+            pauseBtn.textContent = isPaused ? 'Continue animation' : 'Pause animation';
+        });
+
+        togglePointL = document.getElementById('togglePointL');
+        togglePointR = document.getElementById('togglePointR');
+        toggleLineL = document.getElementById('toggleLineL');
+        toggleLineR = document.getElementById('toggleLineR');
+    }
+
+    function createSensor(origin, rotY) {
+        const group = new THREE.Group();
+        const mesh = new THREE.Mesh(new THREE.PlaneGeometry(5, 4), new THREE.MeshBasicMaterial({ color: 0x666666, transparent: true, opacity: 0.6, side: THREE.DoubleSide }));
+        mesh.position.set(0, 0, f);
+        group.add(mesh);
+        
+        const frame = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(5, 4)), new THREE.LineBasicMaterial({ color: 0x666666 }));
+        frame.position.set(0, 0, f);
+        group.add(frame);
+
+        group.position.copy(origin);
+        group.rotation.y = rotY;
+        scene.add(group);
+        return group;
+    }
+
+    function createEpipole(sensor, selfO, otherO) {
+        // Project other camera onto this sensor plane
+        const dir = new THREE.Vector3().subVectors(otherO, selfO).normalize();
+        const epipolePos = new THREE.Vector3().copy(selfO).add(dir.multiplyScalar(f / Math.cos(sensor.rotation.y)));
+        createSphere(epipolePos, 0.1, 0x00d4ff);
+        return epipolePos;
+    }
+
+    function createSphere(pos, rad, color) {
+        const m = new THREE.Mesh(new THREE.SphereGeometry(rad), new THREE.MeshBasicMaterial({ color }));
+        m.position.copy(pos);
+        scene.add(m);
+        return m;
+    }
+
+    function createLine(color) {
+        const l = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color }));
+        scene.add(l);
+        return l;
+    }
+
+    // Given two points on a sensor plane, return the segment clipped to the sensor frame so the epipolar line visibly crosses the whole sensor
+    function epipolarSegment(epipole, point, sensor) {
+        const invQ = sensor.quaternion.clone().invert();
+        const epiLocal = epipole.clone().sub(sensor.position).applyQuaternion(invQ);
+        const pLocal = point.clone().sub(sensor.position).applyQuaternion(invQ);
+
+        const dir = pLocal.clone().sub(epiLocal);
+        const bounds = { minX: -2.5, maxX: 2.5, minY: -2, maxY: 2 };
+        const candidates = [];
+
+        const { x: ex, y: ey } = epiLocal;
+        const { x: dx, y: dy } = dir;
+
+        const addIfWithin = (t) => {
+            const x = ex + dx * t;
+            const y = ey + dy * t;
+            if (x >= bounds.minX - 1e-6 && x <= bounds.maxX + 1e-6 && y >= bounds.minY - 1e-6 && y <= bounds.maxY + 1e-6) {
+                candidates.push({ t, x, y });
+            }
+        };
+
+        if (dx !== 0) {
+            addIfWithin((bounds.minX - ex) / dx);
+            addIfWithin((bounds.maxX - ex) / dx);
+        }
+        if (dy !== 0) {
+            addIfWithin((bounds.minY - ey) / dy);
+            addIfWithin((bounds.maxY - ey) / dy);
+        }
+
+        const inside = (x, y) => x >= bounds.minX && x <= bounds.maxX && y >= bounds.minY && y <= bounds.maxY;
+        if (inside(epiLocal.x, epiLocal.y)) {
+            candidates.push({ t: 0, x: epiLocal.x, y: epiLocal.y });
+        }
+        if (inside(pLocal.x, pLocal.y)) {
+            candidates.push({ t: 1, x: pLocal.x, y: pLocal.y });
+        }
+
+        // If clipping fails just do not draw the line at all (this can happen when the epipole is very close to the sensor plane, causing numerical instability)
+        if (candidates.length < 2) {
+            return [new THREE.Vector3(), new THREE.Vector3()];
+        }
+
+        candidates.sort((a, b) => a.t - b.t);
+        const first = candidates[0];
+        const last = candidates[candidates.length - 1];
+
+        const toWorld = (pt) => new THREE.Vector3(pt.x, pt.y, f).applyQuaternion(sensor.quaternion).add(sensor.position);
+        return [toWorld(first), toWorld(last)];
+    }
+
+    function intersectRayPlane(O, P, sensor) {
+        const rayDir = new THREE.Vector3().subVectors(P, O).normalize();
+        const planeNormal = new THREE.Vector3(0, 0, 1).applyQuaternion(sensor.quaternion);
+        const planePoint = new THREE.Vector3(0, 0, f).applyQuaternion(sensor.quaternion).add(sensor.position);
+        
+        const denom = planeNormal.dot(rayDir);
+        const t = planeNormal.dot(new THREE.Vector3().subVectors(planePoint, O)) / denom;
+        return new THREE.Vector3().copy(O).add(rayDir.multiplyScalar(t));
+    }
+
+    function animate() {
+        requestAnimationFrame(animate);
+        const delta = clock.getDelta();
+        if (!isPaused) {
+            elapsedTime += delta;
+        }
+        const t = elapsedTime * 0.6; // slow the motion for readability
+        const P = new THREE.Vector3(Math.sin(t) * 5, 2 + Math.cos(t * 0.6) * 2, 7 + Math.sin(t * 0.3) * 3);
+        pointP_mesh.position.copy(P);
+
+        const pL = intersectRayPlane(Ol, P, sensorL);
+        const pR = intersectRayPlane(Or, P, sensorR);
+        projL.position.copy(pL);
+        projR.position.copy(pR);
+
+        projL.visible = togglePointL.checked;
+        projR.visible = togglePointR.checked;
+
+        rayL.geometry.setFromPoints([Ol, P]);
+        rayR.geometry.setFromPoints([Or, P]);
+
+        // Update Plane
+        epipolarPlane.geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array([Ol.x, Ol.y, Ol.z, Or.x, Or.y, Or.z, P.x, P.y, P.z]), 3));
+
+        // Epipolar line induced on right sensor by the left image point: through epipoleR and pR
+        if (toggleLineL.checked) {
+            const [epiSegStartL, epiSegEndL] = epipolarSegment(epipoleL, pL, sensorL);
+            epiLineL.geometry.setFromPoints([epiSegStartL, epiSegEndL]);
+        } else {
+            epiLineL.geometry.setFromPoints([]);
+        }
+
+        if (toggleLineR.checked) {
+            const [epiSegStart, epiSegEnd] = epipolarSegment(epipoleR, pR, sensorR);
+            epiLineR.geometry.setFromPoints([epiSegStart, epiSegEnd]);
+        } else {
+            epiLineR.geometry.setFromPoints([]);
+        }
+
+        renderer.render(scene, camera);
+    }
+</script>
+</body>
+</html>
