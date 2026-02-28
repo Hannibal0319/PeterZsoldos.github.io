@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Verged Epipolar Geometry</title>
+    <title>Epipolar Geometry</title>
     <style>
         body { margin: 0; background: #050505; color: #fff; font-family: 'Segoe UI', sans-serif; display: flex; overflow: hidden; }
         #viewport { width: 75%; height: 100vh; }
@@ -20,12 +20,16 @@
         .color-green { color: #00ff88; font-weight: 700; }
         .color-baseline { color: #00ff00; font-weight: 700; }
     </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="An interactive 3D visualization of epipolar geometry, showing two cameras, their epipoles, epipolar lines, and the epipolar plane as a point moves in space.">
+    <meta name="keywords" content="epipolar geometry, 3D visualization, computer vision, cameras, epipoles, epipolar lines, epipolar plane">
+    <meta name="author" content="Peter Zsoldos">
 </head>
 <body>
 
 <div id="viewport"></div>
 <div id="sidebar">
-    <h2>Verged Cameras</h2>
+    <h2>Epipolar Geometry Visualization</h2>
     <p class="desc">Two cameras are pointed slightly toward each other, like your eyes when you fixate on a nearby object. The green plane is the epipolar plane defined by both camera centers and the moving 3D point.</p>
 
     <div class="label">Color coding</div>
