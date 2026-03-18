@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIFT Scale Space Explorer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Chart.js for DoG response visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="glass-panel">
+            <h1>SIFT Scale Space Explorer</h1>
+            <p>Interactive visualization of Gaussian blur pyramid and characteristic scales</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Left Panel: Controls and Main View -->
+            <div class="left-panel">
+                <div class="description-panel glass-panel">
+                    <h3>About Scale Space</h3>
+                    <p class="text-sm">The <strong>Scale-Invariant Feature Transform (SIFT)</strong> algorithm detects local features in images. To ensure features are found regardless of their size, the image is progressively blurred using a Gaussian filter, creating a "Scale Space".</p>
+                    <p class="text-sm">By taking the <strong>Difference of Gaussians (DoG)</strong> between adjacent blurs, we can identify "characteristic scales" &mdash; spatial and scale coordinates where the DoG response peaks. This tool lets you visualize this process interactively.</p>
+                </div>
+
+                <div class="controls glass-panel">
+                    <h3>Controls</h3>
+                    
+                    <div class="control-group file-upload-group">
+                         <label for="imageUpload" class="btn primary-btn">Upload Image</label>
+                         <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+                         <span id="fileName" class="text-sm">No file chosen</span>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="scalesPerOctave">Scales per Octave (s)</label>
+                        <input type="range" id="scalesPerOctave" min="1" max="5" value="3" step="1">
+                        <span id="scalesValue" class="value-display">3</span>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="initialSigma">Initial Sigma (&sigma;₀)</label>
+                        <input type="range" id="initialSigma" min="0.5" max="3.0" value="1.6" step="0.1">
+                        <span id="sigmaValue" class="value-display">1.6</span>
+                    </div>
+
+                    <button id="processBtn" class="btn action-btn" disabled>Generate Scale Space</button>
+                    <div id="statusMessage" class="status-msg text-sm">Waiting for image...</div>
+                </div>
+
+                <div class="canvas-container glass-panel">
+                    <h3>Source Image <span class="text-sm">(Click to analyze point)</span></h3>
+                    <div class="canvas-wrapper">
+                        <canvas id="mainCanvas"></canvas>
+                        <!-- Overlay for drawing click points / extrema -->
+                        <canvas id="overlayCanvas"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-container glass-panel">
+                    <h3>Characteristic Scale Responses</h3>
+                    <p class="text-sm description">Click on a point in the source image to plot its DoG response across different scales. The peak of this plot defines the characteristic scale. <strong>Blue rings</strong> will be drawn over your click to visualize the physical area (where radius corresponds to the blur amount &sigma;) of each detected peak.</p>
+                    <canvas id="responseChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Right Panel: Grid View of Octaves -->
+            <div class="right-panel">
+                <div class="tabs glass-panel">
+                    <button class="tab-btn active" data-target="gaussian-view">Gaussian Scale Space</button>
+                    <button class="tab-btn" data-target="dog-view">Difference of Gaussians</button>
+                </div>
+                
+                <div class="pyramid-view-container glass-panel">
+                    <div id="gaussian-view" class="view-content active">
+                        <div class="empty-state">Load an image to view the Gaussian Pyramid</div>
+                    </div>
+                    <div id="dog-view" class="view-content">
+                        <div class="empty-state">Load an image to view the DoG Pyramid</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/sift_math.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

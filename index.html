@@ -1,16 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Peter Zsoldos Portfolio</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <meta name="description" content="Peter Zsoldos - AI & Robotics Researcher. Explore my projects in Imaging, AI, and robotics.">
-    <meta name="keywords" content="Peter Zsoldos, AI Researcher, Robotics, Computer Vision, Deep Learning, Reinforcement Learning, Scientific Computing">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <meta name="description"
+        content="Peter Zsoldos - AI & Robotics Researcher. Explore my projects in Imaging, AI, and robotics.">
+    <meta name="keywords"
+        content="Peter Zsoldos, AI Researcher, Robotics, Computer Vision, Deep Learning, Reinforcement Learning, Scientific Computing">
     <meta name="author" content="Peter Zsoldos">
     <meta property="og:title" content="Peter Zsoldos Portfolio">
-    <link rel="icon" href="favicon.png" type="image/png"/>
-    <link rel="shortcut icon" href="favicon.png" type="image/png"/>
+    <link rel="icon" href="favicon.png" type="image/png" />
+    <link rel="shortcut icon" href="favicon.png" type="image/png" />
 
     <style>
         :root {
@@ -23,6 +27,7 @@
             --mesh: rgba(56, 189, 248, 0.35);
             --halo: rgba(59, 130, 246, 0.25);
         }
+
         body {
             font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             line-height: 1.7;
@@ -30,16 +35,18 @@
             background-color: var(--bg);
             margin: 0;
         }
+
         .header {
             position: relative;
             overflow: hidden;
             background: radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.45), transparent 35%),
-                        radial-gradient(circle at 80% 30%, rgba(56, 189, 248, 0.3), transparent 32%),
-                        linear-gradient(135deg, #0b1224 0%, #0a1a3f 55%, #0b1224 100%);
+                radial-gradient(circle at 80% 30%, rgba(56, 189, 248, 0.3), transparent 32%),
+                linear-gradient(135deg, #0b1224 0%, #0a1a3f 55%, #0b1224 100%);
             color: white;
             padding: 6rem 2rem;
             text-align: center;
         }
+
         .header::after {
             content: "";
             position: absolute;
@@ -47,6 +54,7 @@
             background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.06), transparent 40%);
             pointer-events: none;
         }
+
         .neural-canvas {
             position: absolute;
             inset: 0;
@@ -57,21 +65,25 @@
             filter: drop-shadow(0 0 24px rgba(56, 189, 248, 0.18));
             z-index: 0;
         }
+
         .header-content {
             position: relative;
             z-index: 1;
         }
+
         .header h1 {
             font-size: 2.5rem;
             margin-bottom: 0.5rem;
             letter-spacing: -0.025em;
         }
+
         .header p {
             font-size: 1.1rem;
             color: #cbd5e1;
             max-width: 600px;
             margin: 0.5rem auto;
         }
+
         .profile-img {
             width: clamp(160px, 24vw, 320px);
             height: auto;
@@ -81,6 +93,7 @@
             box-shadow: 0 12px 40px -10px rgba(56, 189, 248, 0.35);
             margin-bottom: 1rem;
         }
+
         .container {
             position: relative;
             z-index: 2;
@@ -88,6 +101,7 @@
             margin: -4rem auto 4rem;
             padding: 0 1.5rem;
         }
+
         .section-title {
             font-size: 0.9rem;
             text-transform: uppercase;
@@ -96,6 +110,7 @@
             margin-bottom: 1.5rem;
             text-align: center;
         }
+
         .project-card {
             position: relative;
             z-index: 3;
@@ -106,22 +121,26 @@
             box-shadow: 0 18px 55px -25px rgba(15, 23, 42, 0.45), 0 10px 30px -18px rgba(37, 99, 235, 0.28);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
+
         .project-card:hover {
             transform: translateY(-6px);
             box-shadow: 0 24px 65px -25px rgba(15, 23, 42, 0.55), 0 14px 38px -16px rgba(56, 189, 248, 0.35);
         }
+
         .project-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
             margin-bottom: 1rem;
         }
+
         .project-title {
             color: var(--dark);
             margin: 0;
             font-size: 1.4rem;
             font-weight: 700;
         }
+
         .project-org {
             background: #dbeafe;
             color: var(--primary);
@@ -131,21 +150,26 @@
             font-weight: 700;
             white-space: nowrap;
         }
+
         .project-description {
             margin-bottom: 1.5rem;
         }
+
         .project-list {
             padding-left: 1.2rem;
             margin-bottom: 1.5rem;
         }
+
         .project-list li {
             margin-bottom: 0.5rem;
         }
+
         .tag-group {
             display: flex;
             flex-wrap: wrap;
             gap: 0.5rem;
         }
+
         .tag {
             background: #f1f5f9;
             color: #475569;
@@ -154,244 +178,274 @@
             font-size: 0.8rem;
             font-weight: 600;
         }
+
         .links {
             margin-top: 1.5rem;
             border-top: 1px solid #f1f5f9;
             padding-top: 1rem;
         }
+
         .btn-link {
             color: var(--primary);
             text-decoration: none;
             font-weight: 600;
             font-size: 0.9rem;
         }
+
         .btn-link:hover {
             color: var(--accent);
             text-decoration: underline;
         }
+
         .footer-links {
             text-align: center;
             margin-top: 3rem;
             padding: 2rem;
             border-top: 1px solid #e2e8f0;
         }
+
         .footer-links a {
             color: var(--primary);
             text-decoration: none;
             margin: 0 1rem;
             font-weight: 600;
         }
+
         .footer-links a:hover {
             text-decoration: underline;
             color: var(--dark);
         }
+
         footer {
             text-align: center;
             padding-bottom: 4rem;
             color: var(--secondary);
             font-size: 0.9rem;
         }
+
         @media (max-width: 600px) {
-            .project-header { flex-direction: column; gap: 0.5rem; }
+            .project-header {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
         }
     </style>
 </head>
+
 <body>
 
-<div class="header">
-    <canvas class="neural-canvas" id="neural-canvas"></canvas>
-    <div class="header-content">
-        <img src="profile.jpg" alt="Peter Zsoldos" class="profile-img">
-        <h1>Peter Zsoldos</h1>
-        <p>AI & Robotics Researcher | Erasmus Mundus Scholar</p>
-        <p>Sundsvall, Sweden - <a href="https://www.linkedin.com/in/peter--zsoldos" style="color: #60a5fa;" target="_blank" rel="noopener noreferrer">LinkedIn</a></p>
-    </div>
-</div>
-
-<div class="container">
-    <div class="section-title">Selected Projects & Research</div>
-
-    <div class="project-card">
-        <div class="project-header">
-            <h2 class="project-title">Multimodal LLM Control for Boston Dynamics Spot</h2>
-            <span class="project-org">SZTAKI AI Lab</span>
-        </div>
-        <div class="project-description">
-            Implemented a speech to speech system for the Boston Dynamics Spot robot, including voice-controlled task execution.
-        </div>
-        <ul class="project-list">
-            <li>Developed an intelligent multimodal LLM system for intuitive voice control.</li>
-            <li>Trained reinforcement learning models in IsaacLab for complex robot maneuvering.</li>
-            <li>Optimized system performance for real-time execution in resource-constrained environments.</li>
-        </ul>
-        <div class="tag-group">
-            <span class="tag">Reinforcement Learning</span>
-            <span class="tag">IsaacLab</span>
-            <span class="tag">LLMs</span>
-            <span class="tag">Python</span>
-        </div>
-        <div class="links">
-            <a href="https://sztaki.hun-ren.hu/aktualitasok/hirek/2024/magyarul-beszelo-valodi-robotkutyaval-talalkozhatunk-hun-ren-sztaki-es-az" class="btn-link" target="_blank">Read SZTAKI News →</a>
-        </div>
-        </div>
-
-    <div class="project-card">
-        <div class="project-header">
-            <h2 class="project-title">Real-Time Telerobotic EMG Classification</h2>
-            <span class="project-org">Published Research</span>
-        </div>
-        <div class="project-description">
-            Advanced human-robot interaction through gesture recognition derived from Electromyography (EMG) signals.
-        </div>
-        <ul class="project-list">
-            <li>Built a Recurrent Neural Network (RNN) architecture for real-time signal classification.</li>
-            <li>Implemented gesture-to-command mapping for seamless robotic teleoperation.</li>
-            <li>Published findings in IEEE: "Deep Learning-Based Implementation of Telerobotic Control."</li>
-        </ul>
-        <div class="tag-group">
-            <span class="tag">Deep Learning</span>
-            <span class="tag">RNNs</span>
-            <span class="tag">Signal Processing</span>
-            <span class="tag">C++</span>
-        </div>
-        <div class="links">
-            <a href="https://ieeexplore.ieee.org/document/10977583" class="btn-link">Read IEEE Publication →</a>
+    <div class="header">
+        <canvas class="neural-canvas" id="neural-canvas"></canvas>
+        <div class="header-content">
+            <img src="profile.jpg" alt="Peter Zsoldos" class="profile-img">
+            <h1>Peter Zsoldos</h1>
+            <p>AI & Robotics Researcher | Erasmus Mundus Scholar</p>
+            <p>Sundsvall, Sweden - <a href="https://www.linkedin.com/in/peter--zsoldos" style="color: #60a5fa;"
+                    target="_blank" rel="noopener noreferrer">LinkedIn</a></p>
         </div>
     </div>
 
-    <div class="project-card">
-        <div class="project-header">
-            <h2 class="project-title">SAMannot: Video Instance Segmentation</h2>
-            <span class="project-org">Research Contribution</span>
-        </div>
-        <div class="project-description">
-            Technical contributor to the open-source SAMannot framework based on SAM2, as acknowledged in the 2026 research paper.
-        </div>
-        <ul class="project-list">
-            <li>Optimized SAM2 memory management to reduce GPU overhead, enabling long-sequence video processing on commodity hardware.</li>
-            <li>Analyzed and addressed critical open-source issues to refine the model's inference state and state-of-the-art propagation logic.</li>
-            <li>Assisted in developing a local, privacy-focused alternative to commercial annotation platforms.</li>
-        </ul>
-        <div class="tag-group">
-            <span class="tag">SAM2</span> <span class="tag">Memory Optimization</span> <span class="tag">Computer Vision</span>
-            <span class="tag">Open Source</span>
-        </div>
-        <div class="links">
-            <a href="https://arxiv.org/abs/2601.11301" class="btn-link">
-            Read SAMannot Research Paper →
-            </a>
-        </div>
-    </div>
+    <div class="container">
+        <div class="section-title">Selected Projects & Research</div>
 
-    <div class="project-card">
-        <div class="project-header">
-            <h2 class="project-title">AI1Science Radical Methodology Research</h2>
-            <span class="project-org">AI Squad @ HUN-REN</span> </div>
-        <div class="project-description">
-            Researched radical AI-driven scientific methodologies as a member of the AI Squad, exploring the intersection of large-scale models and scientific discovery.
+        <div class="project-card">
+            <div class="project-header">
+                <h2 class="project-title">Multimodal LLM Control for Boston Dynamics Spot</h2>
+                <span class="project-org">SZTAKI AI Lab</span>
+            </div>
+            <div class="project-description">
+                Implemented a speech to speech system for the Boston Dynamics Spot robot, including voice-controlled
+                task execution.
+            </div>
+            <ul class="project-list">
+                <li>Developed an intelligent multimodal LLM system for intuitive voice control.</li>
+                <li>Trained reinforcement learning models in IsaacLab for complex robot maneuvering.</li>
+                <li>Optimized system performance for real-time execution in resource-constrained environments.</li>
+            </ul>
+            <div class="tag-group">
+                <span class="tag">Reinforcement Learning</span>
+                <span class="tag">IsaacLab</span>
+                <span class="tag">LLMs</span>
+                <span class="tag">Python</span>
+            </div>
+            <div class="links">
+                <a href="https://sztaki.hun-ren.hu/aktualitasok/hirek/2024/magyarul-beszelo-valodi-robotkutyaval-talalkozhatunk-hun-ren-sztaki-es-az"
+                    class="btn-link" target="_blank">Read SZTAKI News →</a>
+            </div>
         </div>
-        <ul class="project-description">
-            <li>Collaborated on initiatives involving OpenAI to push the boundaries of automated scientific research.</li>
-            <li>Investigated new frameworks for applying generative AI to complex experimental data.</li>
-        </ul>
-        <div class="tag-group">
-            <span class="tag">AI Research</span> <span class="tag">Scientific Computing</span> <span class="tag">OpenAI</span>
+
+        <div class="project-card">
+            <div class="project-header">
+                <h2 class="project-title">Real-Time Telerobotic EMG Classification</h2>
+                <span class="project-org">Published Research</span>
+            </div>
+            <div class="project-description">
+                Advanced human-robot interaction through gesture recognition derived from Electromyography (EMG)
+                signals.
+            </div>
+            <ul class="project-list">
+                <li>Built a Recurrent Neural Network (RNN) architecture for real-time signal classification.</li>
+                <li>Implemented gesture-to-command mapping for seamless robotic teleoperation.</li>
+                <li>Published findings in IEEE: "Deep Learning-Based Implementation of Telerobotic Control."</li>
+            </ul>
+            <div class="tag-group">
+                <span class="tag">Deep Learning</span>
+                <span class="tag">RNNs</span>
+                <span class="tag">Signal Processing</span>
+                <span class="tag">C++</span>
+            </div>
+            <div class="links">
+                <a href="https://ieeexplore.ieee.org/document/10977583" class="btn-link">Read IEEE Publication →</a>
+            </div>
         </div>
+
+        <div class="project-card">
+            <div class="project-header">
+                <h2 class="project-title">SAMannot: Video Instance Segmentation</h2>
+                <span class="project-org">Research Contribution</span>
+            </div>
+            <div class="project-description">
+                Technical contributor to the open-source SAMannot framework based on SAM2, as acknowledged in the 2026
+                research paper.
+            </div>
+            <ul class="project-list">
+                <li>Optimized SAM2 memory management to reduce GPU overhead, enabling long-sequence video processing on
+                    commodity hardware.</li>
+                <li>Analyzed and addressed critical open-source issues to refine the model's inference state and
+                    state-of-the-art propagation logic.</li>
+                <li>Assisted in developing a local, privacy-focused alternative to commercial annotation platforms.</li>
+            </ul>
+            <div class="tag-group">
+                <span class="tag">SAM2</span> <span class="tag">Memory Optimization</span> <span class="tag">Computer
+                    Vision</span>
+                <span class="tag">Open Source</span>
+            </div>
+            <div class="links">
+                <a href="https://arxiv.org/abs/2601.11301" class="btn-link">
+                    Read SAMannot Research Paper →
+                </a>
+            </div>
+        </div>
+
+        <div class="project-card">
+            <div class="project-header">
+                <h2 class="project-title">AI1Science Radical Methodology Research</h2>
+                <span class="project-org">AI Squad @ HUN-REN</span>
+            </div>
+            <div class="project-description">
+                Researched radical AI-driven scientific methodologies as a member of the AI Squad, exploring the
+                intersection of large-scale models and scientific discovery.
+            </div>
+            <ul class="project-description">
+                <li>Collaborated on initiatives involving OpenAI to push the boundaries of automated scientific
+                    research.</li>
+                <li>Investigated new frameworks for applying generative AI to complex experimental data.</li>
+            </ul>
+            <div class="tag-group">
+                <span class="tag">AI Research</span> <span class="tag">Scientific Computing</span> <span
+                    class="tag">OpenAI</span>
+            </div>
             <div class="links">
                 <a href="https://ai1science.com/" class="btn-link" target="_blank">Explore AI1Science →</a>
             </div>
         </div>
 
-    <div class="project-card">
-        <div class="project-header">
-            <h2 class="project-title">RAG-Assisted Database Chat Interface</h2>
-            <span class="project-org">Data Engineering</span>
+        <div class="project-card">
+            <div class="project-header">
+                <h2 class="project-title">RAG-Assisted Database Chat Interface</h2>
+                <span class="project-org">Data Engineering</span>
+            </div>
+            <div class="project-description">
+                Developed a Retrieval-Augmented Generation (RAG) system to enable natural language querying of complex
+                astronomical databases.
+            </div>
+            <ul class="project-description">
+                <li>Engineered a <strong>RAG (Retrieval-Augmented Generation)</strong> architecture to assist the LLM in
+                    constructing precise SQL queries against astronomical datasets.</li>
+                <li>Enabled researchers to perform complex data retrieval and analysis through a simple conversational
+                    UI.</li>
+            </ul>
+            <div class="tag-group">
+                <span class="tag">RAG</span> <span class="tag">SQL</span> <span class="tag">Natural Language
+                    Processing</span> <span class="tag">Astrophysics Data</span>
+            </div>
+            <div class="links">
+                <a href="https://astroai.sztaki.hu/" class="btn-link" target="_blank">Explore AstroAI Project →</a>
+            </div>
         </div>
-        <div class="project-description">
-            Developed a Retrieval-Augmented Generation (RAG) system to enable natural language querying of complex astronomical databases.
+
+        <div class="project-card">
+            <div class="project-header">
+                <h2 class="project-title">Multi-Object Tracking for Biological Intelligence</h2>
+                <span class="project-org">Max Planck Collaboration</span>
+            </div>
+            <div class="project-description">
+                High-precision computer vision project for environmental and biological monitoring.
+            </div>
+            <ul class="project-list">
+                <li>Developed multi-camera tracking systems for biological specimens in the wild.</li>
+                <li>Analyzed video compression codec impacts on tracking performance and data integrity.</li>
+            </ul>
+            <div class="tag-group">
+                <span class="tag">Computer Vision</span>
+                <span class="tag">Video Codecs</span>
+                <span class="tag">Data Analysis</span>
+            </div>
         </div>
-        <ul class="project-description">
-            <li>Engineered a <strong>RAG (Retrieval-Augmented Generation)</strong> architecture to assist the LLM in constructing precise SQL queries against astronomical datasets.</li>
-            <li>Enabled researchers to perform complex data retrieval and analysis through a simple conversational UI.</li>
-        </ul>
-        <div class="tag-group">
-            <span class="tag">RAG</span> <span class="tag">SQL</span> <span class="tag">Natural Language Processing</span> <span class="tag">Astrophysics Data</span>
-        </div>
-        <div class="links">
-            <a href="https://astroai.sztaki.hu/" class="btn-link" target="_blank">Explore AstroAI Project →</a>
+
+        <div class="project-card">
+            <div class="project-header">
+                <h2 class="project-title">Assistive Exoskeleton Development</h2>
+                <span class="project-org">Startup Co-Founder</span>
+            </div>
+            <div class="project-description">
+                Focused on hardware-software synergy to aid those with neurodegenerative diseases.
+            </div>
+            <ul class="project-list">
+                <li>Co-founded a startup to design wearable robotic solutions.</li>
+                <li>Integrated sensor feedback loops with mechanical actuators for mobility assistance.</li>
+            </ul>
+            <div class="tag-group">
+                <span class="tag">Robotics</span>
+                <span class="tag">C</span>
+                <span class="tag">Embedded Systems</span>
+            </div>
         </div>
     </div>
 
-    <div class="project-card">
-        <div class="project-header">
-            <h2 class="project-title">Multi-Object Tracking for Biological Intelligence</h2>
-            <span class="project-org">Max Planck Collaboration</span>
-        </div>
-        <div class="project-description">
-            High-precision computer vision project for environmental and biological monitoring.
-        </div>
-        <ul class="project-list">
-            <li>Developed multi-camera tracking systems for biological specimens in the wild.</li>
-            <li>Analyzed video compression codec impacts on tracking performance and data integrity.</li>
-        </ul>
-        <div class="tag-group">
-            <span class="tag">Computer Vision</span>
-            <span class="tag">Video Codecs</span>
-            <span class="tag">Data Analysis</span>
-        </div>
+    <div class="footer-links">
+        <h3>Open Source Links</h3>
+        <a href="https://samannot.github.io/" target="_blank">SAMannot Project</a>
+        <br>
+        <a href="https://github.com/Hannibal0319/video_compression.git" target="_blank">Video Compression Analysis</a>
+        <br>
+        <a href="https://github.com/Hannibal0319/RayTracingWEBGL.git" target="_blank">WebGL Ray Tracing</a>
+        <br>
+        <a href="https://zsoldospeter.com/fourier" target="_blank">Fourier Slice Theorem Visualization</a>
+        <br>
+        <a href="https://zsoldospeter.com/detector" target="_blank">Tomography Detector Visualization</a>
+        <br>
+        <a href="https://zsoldospeter.com/epipolar" target="_blank">Epipolar Geometry Visualization</a>
+        <br>
+        <a href="https://zsoldospeter.com/sift_scalespace" target="_blank">SIFT Scale-Space Visualization</a>
     </div>
 
-    <div class="project-card">
-        <div class="project-header">
-            <h2 class="project-title">Assistive Exoskeleton Development</h2>
-            <span class="project-org">Startup Co-Founder</span>
-        </div>
-        <div class="project-description">
-            Focused on hardware-software synergy to aid those with neurodegenerative diseases.
-        </div>
-        <ul class="project-list">
-            <li>Co-founded a startup to design wearable robotic solutions.</li>
-            <li>Integrated sensor feedback loops with mechanical actuators for mobility assistance.</li>
-        </ul>
-        <div class="tag-group">
-            <span class="tag">Robotics</span>
-            <span class="tag">C</span>
-            <span class="tag">Embedded Systems</span>
-        </div>
-    </div>
-</div>
+    <footer>
+        <p>&copy; 2026 Peter Zsoldos • All rights reserved.</p>
+    </footer>
 
-<div class="footer-links">
-    <h3>Open Source Links</h3>
-    <a href="https://samannot.github.io/" target="_blank">SAMannot Project</a>
-    <br>
-    <a href="https://github.com/Hannibal0319/video_compression.git" target="_blank">Video Compression Analysis</a>
-    <br>
-    <a href="https://github.com/Hannibal0319/RayTracingWEBGL.git" target="_blank">WebGL Ray Tracing</a>
-    <br>
-    <a href="https://zsoldospeter.com/fourier" target="_blank">Fourier Slice Theorem Visualization</a>
-    <br>
-    <a href="https://zsoldospeter.com/detector" target="_blank">Tomography Detector Visualization</a>
-    <br>
-    <a href="https://zsoldospeter.com/epipolar" target="_blank">Epipolar Geometry Visualization</a>
-</div>
+    <script>
+        (() => {
+            const canvas = document.getElementById('neural-canvas');
+            if (!canvas) return;
 
-<footer>
-    <p>&copy; 2026 Peter Zsoldos • All rights reserved.</p>
-</footer>
+            const gl = canvas.getContext('webgl', { antialias: true, alpha: true, powerPreference: 'high-performance' });
+            if (!gl) return;
 
-<script>
-(() => {
-    const canvas = document.getElementById('neural-canvas');
-    if (!canvas) return;
+            gl.enable(gl.BLEND);
+            gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-    const gl = canvas.getContext('webgl', { antialias: true, alpha: true, powerPreference: 'high-performance' });
-    if (!gl) return;
-
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-
-    const vertLine = `
+            const vertLine = `
         attribute vec2 a_position;
         attribute float a_alpha;
         varying float vAlpha;
@@ -401,7 +455,7 @@
         }
     `;
 
-    const fragLine = `
+            const fragLine = `
         precision mediump float;
         varying float vAlpha;
         uniform vec3 uColorA;
@@ -412,7 +466,7 @@
         }
     `;
 
-    const vertPoint = `
+            const vertPoint = `
         attribute vec2 a_position;
         attribute float a_size;
         attribute float a_alpha;
@@ -424,7 +478,7 @@
         }
     `;
 
-    const fragPoint = `
+            const fragPoint = `
         precision mediump float;
         varying float vAlpha;
         void main() {
@@ -439,225 +493,226 @@
         }
     `;
 
-    const compile = (src, type) => {
-        const shader = gl.createShader(type);
-        gl.shaderSource(shader, src);
-        gl.compileShader(shader);
-        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-            console.warn(gl.getShaderInfoLog(shader));
-        }
-        return shader;
-    };
+            const compile = (src, type) => {
+                const shader = gl.createShader(type);
+                gl.shaderSource(shader, src);
+                gl.compileShader(shader);
+                if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                    console.warn(gl.getShaderInfoLog(shader));
+                }
+                return shader;
+            };
 
-    const makeProgram = (vs, fs) => {
-        const program = gl.createProgram();
-        gl.attachShader(program, compile(vs, gl.VERTEX_SHADER));
-        gl.attachShader(program, compile(fs, gl.FRAGMENT_SHADER));
-        gl.linkProgram(program);
-        if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-            console.warn(gl.getProgramInfoLog(program));
-        }
-        return program;
-    };
+            const makeProgram = (vs, fs) => {
+                const program = gl.createProgram();
+                gl.attachShader(program, compile(vs, gl.VERTEX_SHADER));
+                gl.attachShader(program, compile(fs, gl.FRAGMENT_SHADER));
+                gl.linkProgram(program);
+                if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+                    console.warn(gl.getProgramInfoLog(program));
+                }
+                return program;
+            };
 
-    const lineProgram = makeProgram(vertLine, fragLine);
-    const pointProgram = makeProgram(vertPoint, fragPoint);
+            const lineProgram = makeProgram(vertLine, fragLine);
+            const pointProgram = makeProgram(vertPoint, fragPoint);
 
-    const lineBuffer = gl.createBuffer();
-    const pointBuffer = gl.createBuffer();
+            const lineBuffer = gl.createBuffer();
+            const pointBuffer = gl.createBuffer();
 
-    const lineAttribs = {
-        position: gl.getAttribLocation(lineProgram, 'a_position'),
-        alpha: gl.getAttribLocation(lineProgram, 'a_alpha'),
-    };
-    const lineUniforms = {
-        colorA: gl.getUniformLocation(lineProgram, 'uColorA'),
-        colorB: gl.getUniformLocation(lineProgram, 'uColorB'),
-    };
+            const lineAttribs = {
+                position: gl.getAttribLocation(lineProgram, 'a_position'),
+                alpha: gl.getAttribLocation(lineProgram, 'a_alpha'),
+            };
+            const lineUniforms = {
+                colorA: gl.getUniformLocation(lineProgram, 'uColorA'),
+                colorB: gl.getUniformLocation(lineProgram, 'uColorB'),
+            };
 
-    const pointAttribs = {
-        position: gl.getAttribLocation(pointProgram, 'a_position'),
-        size: gl.getAttribLocation(pointProgram, 'a_size'),
-        alpha: gl.getAttribLocation(pointProgram, 'a_alpha'),
-    };
+            const pointAttribs = {
+                position: gl.getAttribLocation(pointProgram, 'a_position'),
+                size: gl.getAttribLocation(pointProgram, 'a_size'),
+                alpha: gl.getAttribLocation(pointProgram, 'a_alpha'),
+            };
 
-    const nodes = [];
-    const config = {
-        count: 90,
-        maxDistance: 200,
-        baseSize: 5.0,
-        speed: 0.48,
-        drift: 0.006,
-        maxEdges: 1200,
-        repulseRadius: 160,
-        repulseForce: 0.35,
-        friction: 0.985,
-        maxSpeed: 1.6
-    };
+            const nodes = [];
+            const config = {
+                count: 90,
+                maxDistance: 200,
+                baseSize: 5.0,
+                speed: 0.48,
+                drift: 0.006,
+                maxEdges: 1200,
+                repulseRadius: 160,
+                repulseForce: 0.35,
+                friction: 0.985,
+                maxSpeed: 1.6
+            };
 
-    const mouse = { x: 0, y: 0, active: false };
+            const mouse = { x: 0, y: 0, active: false };
 
-    // Preallocate buffers to avoid per-frame allocations
-    const maxLineVerts = config.maxEdges * 2 * 3; // 2 vertices per edge, 3 floats each
-    const maxPointVerts = config.count * 4;       // 4 floats per point
-    const lineArray = new Float32Array(maxLineVerts);
-    const pointArray = new Float32Array(maxPointVerts);
+            // Preallocate buffers to avoid per-frame allocations
+            const maxLineVerts = config.maxEdges * 2 * 3; // 2 vertices per edge, 3 floats each
+            const maxPointVerts = config.count * 4;       // 4 floats per point
+            const lineArray = new Float32Array(maxLineVerts);
+            const pointArray = new Float32Array(maxPointVerts);
 
-    const resize = () => {
-        const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
-        const width = canvas.clientWidth;
-        const height = canvas.clientHeight;
-        canvas.width = width * dpr;
-        canvas.height = height * dpr;
-        gl.viewport(0, 0, canvas.width, canvas.height);
-    };
+            const resize = () => {
+                const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+                const width = canvas.clientWidth;
+                const height = canvas.clientHeight;
+                canvas.width = width * dpr;
+                canvas.height = height * dpr;
+                gl.viewport(0, 0, canvas.width, canvas.height);
+            };
 
-    const updateMouse = (event) => {
-        const rect = canvas.getBoundingClientRect();
-        const dpr = canvas.width / rect.width;
-        mouse.x = (event.clientX - rect.left) * dpr;
-        mouse.y = (event.clientY - rect.top) * dpr;
-        mouse.active = true;
-    };
+            const updateMouse = (event) => {
+                const rect = canvas.getBoundingClientRect();
+                const dpr = canvas.width / rect.width;
+                mouse.x = (event.clientX - rect.left) * dpr;
+                mouse.y = (event.clientY - rect.top) * dpr;
+                mouse.active = true;
+            };
 
-    const seedNodes = () => {
-        nodes.length = 0;
-        for (let i = 0; i < config.count; i++) {
-            nodes.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                vx: (Math.random() - 0.5) * config.speed,
-                vy: (Math.random() - 0.5) * config.speed,
-                pulse: Math.random() * Math.PI * 2,
-                driftPhase: Math.random() * Math.PI * 2
+            const seedNodes = () => {
+                nodes.length = 0;
+                for (let i = 0; i < config.count; i++) {
+                    nodes.push({
+                        x: Math.random() * canvas.width,
+                        y: Math.random() * canvas.height,
+                        vx: (Math.random() - 0.5) * config.speed,
+                        vy: (Math.random() - 0.5) * config.speed,
+                        pulse: Math.random() * Math.PI * 2,
+                        driftPhase: Math.random() * Math.PI * 2
+                    });
+                }
+            };
+
+            const toClip = (x, y) => {
+                return [
+                    (x / canvas.width) * 2 - 1,
+                    1 - (y / canvas.height) * 2
+                ];
+            };
+
+            const step = () => {
+                let lineOffset = 0;
+                let pointOffset = 0;
+
+                // Physics update and buffers
+                for (let i = 0; i < nodes.length; i++) {
+                    const node = nodes[i];
+                    node.driftPhase += 0.01;
+                    node.vx += Math.cos(node.driftPhase) * config.drift;
+                    node.vy += Math.sin(node.driftPhase) * config.drift;
+
+                    if (mouse.active) {
+                        const dx = node.x - mouse.x;
+                        const dy = node.y - mouse.y;
+                        const dist = Math.hypot(dx, dy) || 1;
+                        if (dist < config.repulseRadius) {
+                            const force = (1 - dist / config.repulseRadius) * config.repulseForce;
+                            node.vx += (dx / dist) * force;
+                            node.vy += (dy / dist) * force;
+                        }
+                    }
+
+                    // Apply damping and cap runaway speed
+                    node.vx *= config.friction;
+                    node.vy *= config.friction;
+                    const speed = Math.hypot(node.vx, node.vy);
+                    if (speed > config.maxSpeed) {
+                        const scale = config.maxSpeed / speed;
+                        node.vx *= scale;
+                        node.vy *= scale;
+                    }
+
+                    node.x += node.vx;
+                    node.y += node.vy;
+
+                    if (node.x < 0 || node.x > canvas.width) node.vx *= -1;
+                    if (node.y < 0 || node.y > canvas.height) node.vy *= -1;
+
+                    node.pulse += 0.03;
+                }
+
+                // Lines
+                let edgeCount = 0;
+                for (let i = 0; i < nodes.length; i++) {
+                    for (let j = i + 1; j < nodes.length; j++) {
+                        if (edgeCount >= config.maxEdges) break;
+                        const dx = nodes[i].x - nodes[j].x;
+                        const dy = nodes[i].y - nodes[j].y;
+                        const dist = Math.hypot(dx, dy);
+                        if (dist < config.maxDistance) {
+                            const alpha = 1 - dist / config.maxDistance;
+                            const a = toClip(nodes[i].x, nodes[i].y);
+                            const b = toClip(nodes[j].x, nodes[j].y);
+                            lineArray[lineOffset++] = a[0];
+                            lineArray[lineOffset++] = a[1];
+                            lineArray[lineOffset++] = alpha * 0.65;
+                            lineArray[lineOffset++] = b[0];
+                            lineArray[lineOffset++] = b[1];
+                            lineArray[lineOffset++] = alpha * 0.55;
+                            edgeCount++;
+                        }
+                    }
+                }
+
+                // Points
+                for (const node of nodes) {
+                    const [cx, cy] = toClip(node.x, node.y);
+                    const size = config.baseSize + Math.sin(node.pulse) * 1.4;
+                    pointArray[pointOffset++] = cx;
+                    pointArray[pointOffset++] = cy;
+                    pointArray[pointOffset++] = size * (canvas.width / 900);
+                    pointArray[pointOffset++] = 0.9;
+                }
+
+                gl.clearColor(0, 0, 0, 0);
+                gl.clear(gl.COLOR_BUFFER_BIT);
+
+                // Draw lines
+                gl.useProgram(lineProgram);
+                gl.uniform3f(lineUniforms.colorA, 59 / 255, 130 / 255, 246 / 255);
+                gl.uniform3f(lineUniforms.colorB, 56 / 255, 189 / 255, 248 / 255);
+                gl.bindBuffer(gl.ARRAY_BUFFER, lineBuffer);
+                gl.bufferData(gl.ARRAY_BUFFER, lineArray.subarray(0, lineOffset), gl.DYNAMIC_DRAW);
+                gl.enableVertexAttribArray(lineAttribs.position);
+                gl.enableVertexAttribArray(lineAttribs.alpha);
+                gl.vertexAttribPointer(lineAttribs.position, 2, gl.FLOAT, false, 12, 0);
+                gl.vertexAttribPointer(lineAttribs.alpha, 1, gl.FLOAT, false, 12, 8);
+                gl.drawArrays(gl.LINES, 0, lineOffset / 3);
+
+                // Draw points
+                gl.useProgram(pointProgram);
+                gl.bindBuffer(gl.ARRAY_BUFFER, pointBuffer);
+                gl.bufferData(gl.ARRAY_BUFFER, pointArray.subarray(0, pointOffset), gl.DYNAMIC_DRAW);
+                gl.enableVertexAttribArray(pointAttribs.position);
+                gl.enableVertexAttribArray(pointAttribs.size);
+                gl.enableVertexAttribArray(pointAttribs.alpha);
+                gl.vertexAttribPointer(pointAttribs.position, 2, gl.FLOAT, false, 16, 0);
+                gl.vertexAttribPointer(pointAttribs.size, 1, gl.FLOAT, false, 16, 8);
+                gl.vertexAttribPointer(pointAttribs.alpha, 1, gl.FLOAT, false, 16, 12);
+                gl.drawArrays(gl.POINTS, 0, pointOffset / 4);
+
+                requestAnimationFrame(step);
+            };
+
+            window.addEventListener('resize', () => {
+                resize();
+                seedNodes();
             });
-        }
-    };
 
-    const toClip = (x, y) => {
-        return [
-            (x / canvas.width) * 2 - 1,
-            1 - (y / canvas.height) * 2
-        ];
-    };
+            window.addEventListener('mousemove', updateMouse);
+            window.addEventListener('mouseleave', () => { mouse.active = false; });
 
-    const step = () => {
-        let lineOffset = 0;
-        let pointOffset = 0;
-
-        // Physics update and buffers
-        for (let i = 0; i < nodes.length; i++) {
-            const node = nodes[i];
-            node.driftPhase += 0.01;
-            node.vx += Math.cos(node.driftPhase) * config.drift;
-            node.vy += Math.sin(node.driftPhase) * config.drift;
-
-            if (mouse.active) {
-                const dx = node.x - mouse.x;
-                const dy = node.y - mouse.y;
-                const dist = Math.hypot(dx, dy) || 1;
-                if (dist < config.repulseRadius) {
-                    const force = (1 - dist / config.repulseRadius) * config.repulseForce;
-                    node.vx += (dx / dist) * force;
-                    node.vy += (dy / dist) * force;
-                }
-            }
-
-            // Apply damping and cap runaway speed
-            node.vx *= config.friction;
-            node.vy *= config.friction;
-            const speed = Math.hypot(node.vx, node.vy);
-            if (speed > config.maxSpeed) {
-                const scale = config.maxSpeed / speed;
-                node.vx *= scale;
-                node.vy *= scale;
-            }
-
-            node.x += node.vx;
-            node.y += node.vy;
-
-            if (node.x < 0 || node.x > canvas.width) node.vx *= -1;
-            if (node.y < 0 || node.y > canvas.height) node.vy *= -1;
-
-            node.pulse += 0.03;
-        }
-
-        // Lines
-        let edgeCount = 0;
-        for (let i = 0; i < nodes.length; i++) {
-            for (let j = i + 1; j < nodes.length; j++) {
-                if (edgeCount >= config.maxEdges) break;
-                const dx = nodes[i].x - nodes[j].x;
-                const dy = nodes[i].y - nodes[j].y;
-                const dist = Math.hypot(dx, dy);
-                if (dist < config.maxDistance) {
-                    const alpha = 1 - dist / config.maxDistance;
-                    const a = toClip(nodes[i].x, nodes[i].y);
-                    const b = toClip(nodes[j].x, nodes[j].y);
-                    lineArray[lineOffset++] = a[0];
-                    lineArray[lineOffset++] = a[1];
-                    lineArray[lineOffset++] = alpha * 0.65;
-                    lineArray[lineOffset++] = b[0];
-                    lineArray[lineOffset++] = b[1];
-                    lineArray[lineOffset++] = alpha * 0.55;
-                    edgeCount++;
-                }
-            }
-        }
-
-        // Points
-        for (const node of nodes) {
-            const [cx, cy] = toClip(node.x, node.y);
-            const size = config.baseSize + Math.sin(node.pulse) * 1.4;
-            pointArray[pointOffset++] = cx;
-            pointArray[pointOffset++] = cy;
-            pointArray[pointOffset++] = size * (canvas.width / 900);
-            pointArray[pointOffset++] = 0.9;
-        }
-
-        gl.clearColor(0, 0, 0, 0);
-        gl.clear(gl.COLOR_BUFFER_BIT);
-
-        // Draw lines
-        gl.useProgram(lineProgram);
-        gl.uniform3f(lineUniforms.colorA, 59/255, 130/255, 246/255);
-        gl.uniform3f(lineUniforms.colorB, 56/255, 189/255, 248/255);
-        gl.bindBuffer(gl.ARRAY_BUFFER, lineBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, lineArray.subarray(0, lineOffset), gl.DYNAMIC_DRAW);
-        gl.enableVertexAttribArray(lineAttribs.position);
-        gl.enableVertexAttribArray(lineAttribs.alpha);
-        gl.vertexAttribPointer(lineAttribs.position, 2, gl.FLOAT, false, 12, 0);
-        gl.vertexAttribPointer(lineAttribs.alpha, 1, gl.FLOAT, false, 12, 8);
-        gl.drawArrays(gl.LINES, 0, lineOffset / 3);
-
-        // Draw points
-        gl.useProgram(pointProgram);
-        gl.bindBuffer(gl.ARRAY_BUFFER, pointBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, pointArray.subarray(0, pointOffset), gl.DYNAMIC_DRAW);
-        gl.enableVertexAttribArray(pointAttribs.position);
-        gl.enableVertexAttribArray(pointAttribs.size);
-        gl.enableVertexAttribArray(pointAttribs.alpha);
-        gl.vertexAttribPointer(pointAttribs.position, 2, gl.FLOAT, false, 16, 0);
-        gl.vertexAttribPointer(pointAttribs.size, 1, gl.FLOAT, false, 16, 8);
-        gl.vertexAttribPointer(pointAttribs.alpha, 1, gl.FLOAT, false, 16, 12);
-        gl.drawArrays(gl.POINTS, 0, pointOffset / 4);
-
-        requestAnimationFrame(step);
-    };
-
-    window.addEventListener('resize', () => {
-        resize();
-        seedNodes();
-    });
-
-    window.addEventListener('mousemove', updateMouse);
-    window.addEventListener('mouseleave', () => { mouse.active = false; });
-
-    resize();
-    seedNodes();
-    requestAnimationFrame(step);
-})();
-</script>
+            resize();
+            seedNodes();
+            requestAnimationFrame(step);
+        })();
+    </script>
 
 </body>
+
 </html>
