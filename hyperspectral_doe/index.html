@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snapshot Hyperspectral Imaging with a DOE</title>
+    <meta name="description" content="Interactive ray-diagram visualization of snapshot hyperspectral imaging using a diffractive optical element (DOE): see how wavelength-dependent dispersion codes a spectral cube into a single 2D sensor shot, and how reconstruction recovers it.">
+    <meta name="keywords" content="hyperspectral imaging, diffractive optical element, DOE, snapshot spectral imaging, computational imaging, dispersion, coded aperture, interactive visualization">
+    <meta name="author" content="Peter Zsoldos">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://zsoldospeter.com/hyperspectral_doe/">
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Snapshot Hyperspectral Imaging with a DOE">
+    <meta property="og:description" content="Interactive visualization of how a diffractive optical element encodes a spectral cube into one sensor snapshot.">
+    <meta property="og:url" content="https://zsoldospeter.com/hyperspectral_doe/">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Snapshot Hyperspectral Imaging with a DOE">
+    <meta name="twitter:description" content="Interactive visualization of DOE-based snapshot spectral imaging.">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "applicationCategory": "EducationalApplication",
+      "name": "Snapshot Hyperspectral Imaging with a DOE",
+      "operatingSystem": "Any",
+      "description": "Interactive ray-diagram visualization of DOE-based snapshot spectral imaging and computational reconstruction.",
+      "author": { "@type": "Person", "name": "Peter Zsoldos" },
+      "url": "https://zsoldospeter.com/hyperspectral_doe/"
+    }
+    </script>
+
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: #0b1220;
+            color: #e2e8f0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            display: flex;
+            flex-wrap: wrap;
+            min-height: 100vh;
+        }
+        #main {
+            flex: 1 1 700px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+        h1 { font-size: 1.3rem; margin: 0 0 2px; text-align: center; }
+        .sub { color: #94a3b8; font-size: 0.85rem; margin: 0 0 6px; text-align: center; }
+        canvas { background: #050810; border: 1px solid #1f2937; border-radius: 10px; max-width: 100%; }
+        #sidebar {
+            flex: 0 0 320px;
+            background: #0f172a;
+            border-left: 1px solid #1f2937;
+            padding: 22px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .label { color: #38bdf8; font-weight: 700; font-size: 0.95rem; }
+        .desc { font-size: 0.82rem; color: #94a3b8; line-height: 1.45; margin: 4px 0 0; }
+        .card { background: #111827; border: 1px solid #1f2937; border-radius: 10px; padding: 12px 14px; }
+        .row { display: flex; gap: 8px; }
+        .row .btn { flex: 1; }
+        .btn {
+            padding: 9px 10px; background: #1e293b; color: #e2e8f0;
+            border: 1px solid #334155; border-radius: 8px; font-weight: 700; cursor: pointer;
+            font-size: 0.85rem; transition: background 0.15s ease, border-color 0.15s ease;
+        }
+        .btn:hover { background: #263449; }
+        .btn.active { background: #38bdf8; border-color: #38bdf8; color: #05101f; }
+        .btn.wide { width: 100%; margin-top: 4px; }
+        input[type=range] { width: 100%; accent-color: #38bdf8; }
+        .readout { font-family: 'Consolas', monospace; font-size: 0.82rem; color: #7dd3fc; }
+        label.small { font-size: 0.82rem; color: #cbd5e1; }
+    </style>
+</head>
+<body>
+
+<div id="main">
+    <h1>Snapshot Hyperspectral Imaging with a DOE</h1>
+    <p class="sub">A few scene points, six sample wavelengths each — watch where they land on the sensor.</p>
+    <canvas id="rayCanvas" width="700" height="440"></canvas>
+    <canvas id="reconCanvas" width="700" height="130"></canvas>
+</div>
+
+<div id="sidebar">
+    <div class="label">What's a DOE</div>
+    <p class="desc">A diffractive optical element (DOE) is a microstructured optic that bends light by a <strong>wavelength-dependent</strong> angle — the same principle as a diffraction grating, engineered into the imaging path.</p>
+
+    <div class="label">Why it's needed</div>
+    <p class="desc">An ordinary lens focuses every color from a scene point to (almost) the same sensor pixel: you record brightness, not spectrum. Capturing a full spectral cube normally takes many exposures through different filters.</p>
+
+    <div class="card">
+        <div class="row">
+            <button class="btn active" id="btnConv">Conventional lens</button>
+            <button class="btn" id="btnDoe">With DOE</button>
+        </div>
+        <div style="margin-top:12px;">
+            <label class="small">Dispersion strength: <span class="readout" id="dispValue">1.0</span></label>
+            <input type="range" id="dispSlider" min="0.3" max="2.0" step="0.1" value="1.0">
+        </div>
+        <div style="margin-top:12px;">
+            <label class="small">Scene points:</label>
+            <div class="row" style="margin-top:6px;">
+                <button class="btn" id="btnP2">2</button>
+                <button class="btn active" id="btnP3">3</button>
+                <button class="btn" id="btnP4">4</button>
+            </div>
+        </div>
+        <button class="btn wide" id="btnRecon">Reveal reconstruction</button>
+    </div>
+
+    <div class="label">Snapshot trick</div>
+    <p class="desc">With a DOE, each wavelength lands at a slightly different sensor position. A single 2D exposure ends up holding an overlapping, <strong>coded</strong> mixture of every scene point's spectrum.</p>
+
+    <div class="label">Getting the cube back</div>
+    <p class="desc">Because the DOE's dispersion pattern is known precisely, a computational reconstruction algorithm can invert that mixing — recovering the full (x, y, λ) datacube from one snapshot.</p>
+</div>
+
+<script>
+(() => {
+    const rayCanvas = document.getElementById('rayCanvas');
+    const reconCanvas = document.getElementById('reconCanvas');
+    const rCtx = rayCanvas.getContext('2d');
+    const reCtx = reconCanvas.getContext('2d');
+
+    const btnConv = document.getElementById('btnConv');
+    const btnDoe = document.getElementById('btnDoe');
+    const dispSlider = document.getElementById('dispSlider');
+    const dispValue = document.getElementById('dispValue');
+    const btnP2 = document.getElementById('btnP2');
+    const btnP3 = document.getElementById('btnP3');
+    const btnP4 = document.getElementById('btnP4');
+    const btnRecon = document.getElementById('btnRecon');
+
+    const W = rayCanvas.width, H = rayCanvas.height;
+    const xObject = 70, xDOE = 340, xSensor = 600, sensorW = 30;
+
+    const WL = [420, 470, 520, 580, 650, 850];
+    function wavelengthToRGB(nm) {
+        let r = 0, g = 0, b = 0;
+        const w = Math.min(nm, 780);
+        if (w >= 380 && w < 440) { r = -(w - 440) / 60; b = 1; }
+        else if (w < 490) { g = (w - 440) / 50; b = 1; }
+        else if (w < 510) { g = 1; b = -(w - 510) / 20; }
+        else if (w < 580) { r = (w - 510) / 70; g = 1; }
+        else if (w < 645) { r = 1; g = -(w - 645) / 65; }
+        else { r = 1; }
+        let factor = 1;
+        if (w >= 380 && w < 420) factor = 0.3 + 0.7 * (w - 380) / 40;
+        else if (w > 645) factor = 0.3 + 0.7 * (780 - w) / 135;
+        if (nm > 780) factor = Math.max(0.15, 0.35 * (1 - (nm - 780) / 260));
+        const gamma = 0.8;
+        return [r, g, b].map(c => Math.round(255 * Math.pow(Math.max(c, 0) * factor, gamma)));
+    }
+    const WLCOLORS = WL.map(wavelengthToRGB);
+
+    let mode = 'conventional'; // 'conventional' | 'doe'
+    let dispersion = 1.0;
+    let nPoints = 3;
+    let reconOn = false;
+
+    function pointYs(n) {
+        const top = 75, bottom = H - 75;
+        if (n === 1) return [(top + bottom) / 2];
+        const ys = [];
+        for (let i = 0; i < n; i++) ys.push(top + (i * (bottom - top)) / (n - 1));
+        return ys;
+    }
+
+    function sensorYFor(y0, nm) {
+        if (mode === 'conventional') return y0;
+        return y0 + dispersion * (nm - 550) * 0.42;
+    }
+
+    function drawRays() {
+        rCtx.clearRect(0, 0, W, H);
+
+        // object plane
+        rCtx.strokeStyle = '#334155';
+        rCtx.beginPath(); rCtx.moveTo(xObject, 20); rCtx.lineTo(xObject, H - 20); rCtx.stroke();
+        rCtx.fillStyle = '#64748b';
+        rCtx.font = '11px Segoe UI';
+        rCtx.fillText('scene points', xObject - 34, 14);
+
+        // DOE / lens icon
+        rCtx.fillStyle = '#111827';
+        rCtx.fillRect(xDOE - 12, 20, 24, H - 40);
+        rCtx.strokeStyle = '#475569';
+        rCtx.strokeRect(xDOE - 12, 20, 24, H - 40);
+        if (mode === 'doe') {
+            rCtx.strokeStyle = '#38bdf8';
+            for (let y = 26; y < H - 20; y += 10) {
+                rCtx.beginPath(); rCtx.moveTo(xDOE - 12, y); rCtx.lineTo(xDOE + 12, y); rCtx.stroke();
+            }
+            rCtx.fillStyle = '#38bdf8';
+            rCtx.fillText('DOE', xDOE - 12, 14);
+        } else {
+            rCtx.strokeStyle = '#94a3b8';
+            rCtx.beginPath();
+            rCtx.ellipse(xDOE, H / 2, 10, (H - 40) / 2, 0, 0, Math.PI * 2);
+            rCtx.stroke();
+            rCtx.fillStyle = '#94a3b8';
+            rCtx.fillText('lens', xDOE - 10, 14);
+        }
+
+        const ys = pointYs(nPoints);
+
+        // rays
+        for (let pi = 0; pi < ys.length; pi++) {
+            const y0 = ys[pi];
+            for (let wi = 0; wi < WL.length; wi++) {
+                const nm = WL[wi];
+                const [r, g, b] = WLCOLORS[wi];
+                const ySensor = sensorYFor(y0, nm);
+                rCtx.strokeStyle = `rgba(${r},${g},${b},0.55)`;
+                rCtx.lineWidth = 1.1;
+                rCtx.beginPath();
+                rCtx.moveTo(xObject, y0);
+                rCtx.lineTo(xSensor, ySensor);
+                rCtx.stroke();
+            }
+            rCtx.fillStyle = '#ffffff';
+            rCtx.beginPath(); rCtx.arc(xObject, y0, 4, 0, Math.PI * 2); rCtx.fill();
+            rCtx.fillStyle = '#e2e8f0';
+            rCtx.font = 'bold 11px Segoe UI';
+            rCtx.fillText('P' + (pi + 1), xObject - 22, y0 + 4);
+        }
+
+        // sensor accumulation
+        const sigma = mode === 'conventional' ? 3 : 9;
+        const accR = new Float32Array(H), accG = new Float32Array(H), accB = new Float32Array(H), accW = new Float32Array(H);
+        for (const y0 of ys) {
+            for (let wi = 0; wi < WL.length; wi++) {
+                const nm = WL[wi];
+                const [r, g, b] = WLCOLORS[wi];
+                const ySensor = sensorYFor(y0, nm);
+                const lo = Math.max(0, Math.floor(ySensor - 3 * sigma));
+                const hi = Math.min(H - 1, Math.ceil(ySensor + 3 * sigma));
+                for (let y = lo; y <= hi; y++) {
+                    const d = y - ySensor;
+                    const wgt = Math.exp(-0.5 * (d * d) / (sigma * sigma));
+                    accR[y] += wgt * r; accG[y] += wgt * g; accB[y] += wgt * b; accW[y] += wgt;
+                }
+            }
+        }
+        rCtx.fillStyle = '#050810';
+        rCtx.fillRect(xSensor, 20, sensorW, H - 40);
+        for (let y = 20; y < H - 20; y++) {
+            const wgt = accW[y];
+            if (wgt <= 0.001) continue;
+            const alpha = Math.min(1, wgt * 2.2);
+            const cr = accR[y] / wgt, cg = accG[y] / wgt, cb = accB[y] / wgt;
+            rCtx.fillStyle = `rgba(${cr | 0},${cg | 0},${cb | 0},${alpha})`;
+            rCtx.fillRect(xSensor, y, sensorW, 1);
+        }
+        rCtx.strokeStyle = '#475569';
+        rCtx.strokeRect(xSensor, 20, sensorW, H - 40);
+        rCtx.fillStyle = '#94a3b8';
+        rCtx.fillText('sensor', xSensor - 4, 14);
+
+        drawRecon();
+    }
+
+    function drawRecon() {
+        reCtx.clearRect(0, 0, reconCanvas.width, reconCanvas.height);
+        reCtx.fillStyle = '#94a3b8';
+        reCtx.font = '13px Segoe UI';
+
+        if (mode === 'conventional') {
+            reCtx.fillText('A single lens collapses every wavelength onto the same sensor position — the spectral', 16, 40);
+            reCtx.fillText('information never reaches the sensor, so there is nothing here to reconstruct.', 16, 60);
+            return;
+        }
+        if (!reconOn) {
+            reCtx.fillText("Click \"Reveal reconstruction\" to see the per-point spectra recovered from the coded snapshot.", 16, 40);
+            return;
+        }
+
+        const ys = pointYs(nPoints);
+        const colW = reconCanvas.width / ys.length;
+        for (let pi = 0; pi < ys.length; pi++) {
+            const cx = pi * colW + 16;
+            reCtx.fillStyle = '#e2e8f0';
+            reCtx.font = 'bold 12px Segoe UI';
+            reCtx.fillText('Recovered spectrum @ P' + (pi + 1), cx, 20);
+            const swW = (colW - 32) / WL.length;
+            for (let wi = 0; wi < WL.length; wi++) {
+                const [r, g, b] = WLCOLORS[wi];
+                reCtx.fillStyle = `rgb(${r},${g},${b})`;
+                reCtx.fillRect(cx + wi * swW, 34, swW - 3, 70);
+            }
+            reCtx.fillStyle = '#64748b';
+            reCtx.font = '9px Segoe UI';
+            reCtx.fillText('400nm', cx, 118);
+            reCtx.fillText('1000nm', cx + colW - 66, 118);
+        }
+    }
+
+    function setMode(m) {
+        mode = m;
+        btnConv.classList.toggle('active', m === 'conventional');
+        btnDoe.classList.toggle('active', m === 'doe');
+        dispSlider.disabled = m !== 'doe';
+        dispSlider.style.opacity = m === 'doe' ? 1 : 0.4;
+        drawRays();
+    }
+
+    function setPoints(n) {
+        nPoints = n;
+        btnP2.classList.toggle('active', n === 2);
+        btnP3.classList.toggle('active', n === 3);
+        btnP4.classList.toggle('active', n === 4);
+        drawRays();
+    }
+
+    btnConv.addEventListener('click', () => setMode('conventional'));
+    btnDoe.addEventListener('click', () => setMode('doe'));
+    btnP2.addEventListener('click', () => setPoints(2));
+    btnP3.addEventListener('click', () => setPoints(3));
+    btnP4.addEventListener('click', () => setPoints(4));
+
+    dispSlider.addEventListener('input', () => {
+        dispersion = parseFloat(dispSlider.value);
+        dispValue.textContent = dispersion.toFixed(1);
+        drawRays();
+    });
+
+    btnRecon.addEventListener('click', () => {
+        reconOn = !reconOn;
+        btnRecon.textContent = reconOn ? 'Hide reconstruction' : 'Reveal reconstruction';
+        drawRays();
+    });
+
+    setMode('conventional');
+    dispSlider.disabled = true;
+    dispSlider.style.opacity = 0.4;
+    drawRays();
+})();
+</script>
+</body>
+</html>
